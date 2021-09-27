@@ -41,4 +41,18 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function admin()
+    {
+        return $this->hasOne(Admin::class,'user_id');
+    }
+
+    public function guru()
+    {
+        return $this->hasOne(Guru::class,'user_id');
+    }
+    public function orangTua()
+    {
+        return $this->hasOne(OrangTua::class,'user_id');
+    }
 }
