@@ -17,6 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::group(['prefix' => 'kelas'], function (){
-    Route::post('/store', [\App\Http\Controllers\Admin\KelasController::class, 'store']);
-});
+
