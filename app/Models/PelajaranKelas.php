@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Jadwal extends Model
+class PelajaranKelas extends Model
 {
     use HasFactory;
-    protected $table = 'jadwal';
+    protected $table = 'pelajaran_kelas';
 
     public function periode()
     {

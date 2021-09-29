@@ -29,3 +29,8 @@ Route::group(['prefix' => 'periode'], function (){
 Route::group(['prefix' => 'mapel'], function (){
     Route::post('/store', [\App\Http\Controllers\Admin\MataPelajaranController::class, 'store']);
 });
+
+Route::group(['prefix' => 'jadwal'], function (){
+    Route::post('/store', [\App\Http\Controllers\Admin\JadwalController::class, 'store']);
+    Route::get('/list', [\App\Http\Controllers\Admin\JadwalController::class, 'getJadwal']);
+});
