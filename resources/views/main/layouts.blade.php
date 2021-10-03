@@ -29,30 +29,45 @@
         </li>
     </ul>
 </nav>
-<aside class="main-sidebar sidebar-dark-primary elevation-4 my-sidebar">
-    <div class="sidebar my-content-sidebar">
-        <div class="brand-link my-text-light d-flex justify-content-center align-items-center mb-3"
-             style="border-bottom: 1px solid white;">
-            SISTEM AKADEMIK MTA
-        </div>
-        <div class="my-sidebar-menu">
-            <ul class="nav nav-sidebar nav-pills flex-column">
-                <li class="nav-item has-treeview" data-view="treeview" role="menu" data-accordion="false">
-                    <a href="#" class="nav-link tree-item">
-                        <i class="nav-icon fa fa-hdd-o" aria-hidden="true"></i>
-                        <p>
-                            Master
-                            <i class="right fa fa-angle-down"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                    </ul>
-                </li>
-            </ul>
-        </div>
+<x-sidebar class="sidebar-dark-primary elevation-1">
+    <x-slot name="brand">
+        <x-sidebar.brand></x-sidebar.brand>
+    </x-slot>
+    <x-slot name="menu">
+        <x-sidebar.menu></x-sidebar.menu>
+    </x-slot>
+</x-sidebar>
+{{--<aside class="main-sidebar sidebar-dark-primary elevation-4 my-sidebar">--}}
+{{--    <div class="sidebar my-content-sidebar">--}}
+{{--        <div class="brand-link my-text-light d-flex justify-content-center align-items-center mb-3"--}}
+{{--             style="border-bottom: 1px solid white;">--}}
+{{--            SISTEM AKADEMIK MTA--}}
+{{--        </div>--}}
+{{--        <div class="my-sidebar-menu">--}}
+{{--            <ul class="nav nav-sidebar nav-pills flex-column">--}}
+{{--                <li class="nav-item has-treeview" data-view="treeview" role="menu" data-accordion="false" id="nav-master">--}}
+{{--                    <a href="#" class="nav-link tree-item">--}}
+{{--                        <i class="nav-icon fa fa-hdd-o" aria-hidden="true"></i>--}}
+{{--                        <p>--}}
+{{--                            Master--}}
+{{--                            <i class="right fa fa-angle-down"></i>--}}
+{{--                        </p>--}}
+{{--                    </a>--}}
+{{--                    <ul class="nav nav-treeview">--}}
+{{--                        <li class="nav-item">--}}
+{{--                            <a href="#"--}}
+{{--                               class="nav-link {{ $url === '/'.\Illuminate\Support\Facades\Request::path() ? 'active' : '' }}">--}}
+{{--                                <i class="{{ $faIcon }} nav-icon" aria-hidden="true"></i>--}}
+{{--                                <p>{{ $title }}</p>--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                </li>--}}
+{{--            </ul>--}}
+{{--        </div>--}}
 
-    </div>
-</aside>
+{{--    </div>--}}
+{{--</aside>--}}
 <div class="content-wrapper my-content-wrapper">
     <div class="my-content">
         <div class="my-content-title-wrapper">
