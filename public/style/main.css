@@ -147,6 +147,10 @@
     box-shadow: 0 3px 8px -4px #cfd8dc;
 }
 
+.dark-navbar {
+    background-color: #343a40;
+}
+
 .my-rounded{
     border-radius: 15px;
 }

@@ -16,58 +16,33 @@
     @yield('css')
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
-<nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <ul class="navbar-nav">
-        <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fa fa-bars"></i></a>
-        </li>
-        <li class="nav-item d-none d-sm-inline-block">
-            <a href="index3.html" class="nav-link">Home</a>
-        </li>
-        <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">Contact</a>
-        </li>
-    </ul>
-</nav>
+<x-navbar class="dark-navbar">
+    <x-navbar.left-navbar :isPushMenu="true">
+        <x-navbar.item class="d-sm-inline-block"><a href="#" class="nav-link">Contact</a></x-navbar.item>
+    </x-navbar.left-navbar>
+    <x-navbar.right-navbar>
+        <x-navbar.item class="d-sm-inline-block"><a href="#" class="nav-link">Logout</a></x-navbar.item>
+    </x-navbar.right-navbar>
+
+</x-navbar>
+@php
+    $menuMaster = [['link' => '/', 'title' => 'User'],
+        ['link' => '/', 'title' => 'Admin'],
+        ['link' => '/', 'title' => 'Siswa'],];
+
+@endphp
 <x-sidebar class="sidebar-dark-primary elevation-1">
     <x-slot name="brand">
         <x-sidebar.brand></x-sidebar.brand>
     </x-slot>
     <x-slot name="menu">
-        <x-sidebar.menu></x-sidebar.menu>
+        <x-sidebar.menu>
+            <x-sidebar.tree-menu title="Master" icon="fa fa-hdd-o" :children="$menuMaster"/>
+            <x-sidebar.header-menu title="Transaction"/>
+            <x-sidebar.item title="Menu Item 1" link="/" />
+        </x-sidebar.menu>
     </x-slot>
 </x-sidebar>
-{{--<aside class="main-sidebar sidebar-dark-primary elevation-4 my-sidebar">--}}
-{{--    <div class="sidebar my-content-sidebar">--}}
-{{--        <div class="brand-link my-text-light d-flex justify-content-center align-items-center mb-3"--}}
-{{--             style="border-bottom: 1px solid white;">--}}
-{{--            SISTEM AKADEMIK MTA--}}
-{{--        </div>--}}
-{{--        <div class="my-sidebar-menu">--}}
-{{--            <ul class="nav nav-sidebar nav-pills flex-column">--}}
-{{--                <li class="nav-item has-treeview" data-view="treeview" role="menu" data-accordion="false" id="nav-master">--}}
-{{--                    <a href="#" class="nav-link tree-item">--}}
-{{--                        <i class="nav-icon fa fa-hdd-o" aria-hidden="true"></i>--}}
-{{--                        <p>--}}
-{{--                            Master--}}
-{{--                            <i class="right fa fa-angle-down"></i>--}}
-{{--                        </p>--}}
-{{--                    </a>--}}
-{{--                    <ul class="nav nav-treeview">--}}
-{{--                        <li class="nav-item">--}}
-{{--                            <a href="#"--}}
-{{--                               class="nav-link {{ $url === '/'.\Illuminate\Support\Facades\Request::path() ? 'active' : '' }}">--}}
-{{--                                <i class="{{ $faIcon }} nav-icon" aria-hidden="true"></i>--}}
-{{--                                <p>{{ $title }}</p>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                    </ul>--}}
-{{--                </li>--}}
-{{--            </ul>--}}
-{{--        </div>--}}
-
-{{--    </div>--}}
-{{--</aside>--}}
 <div class="content-wrapper my-content-wrapper">
     <div class="my-content">
         <div class="my-content-title-wrapper">
