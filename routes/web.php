@@ -24,4 +24,10 @@ Route::get('/dashboard', function () {
     return view('main.index');
 });
 
+Route::group(['prefix' => 'admin'], function (){
+    Route::get('/', function (){
+        return view('main.pengguna.admin.index');
+    });
+});
+
 

@@ -148,7 +148,35 @@
 }
 
 .dark-navbar {
-    background-color: #343a40;
+    background-color: #FFF;
+}
+
+.navbar-link-item {
+    text-decoration: none;
+    color: rgba(0,0,0,.5);
+}
+.navbar-link-item:hover {
+    text-decoration: none;
+    color: #4C4C4C;
+}
+
+.breadcrumb-transparent {
+    background-color: inherit;
+}
+
+.card-head {
+    height: 45px;
+    width: 100%;
+    background-color: #17A2B8;
+    border-top-right-radius: 0.25rem;
+    border-top-left-radius: 0.25rem;
+    padding: 10px;
+    color: white;
+}
+
+.header-blue {
+    background-color: #17A2B8;
+    color: white;
 }
 
 .my-rounded{

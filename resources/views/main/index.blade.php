@@ -1,15 +1,17 @@
 @extends('main.layouts')
 
+@php
+    $breadcrumb_item = [
+        [
+            'link' => '/',
+            'title' => 'Dashboard'
+        ]
+    ];
+@endphp
 @section('content-title')
-    <div class="my-content-title-wrapper">
-        <p class="my-content-title">Dashboard</p>
-    </div>
-    <div>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Library</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Data</li>
-        </ol>
+    <div class="d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Dashboard</h4>
+        <x-breadcrumb :item="$breadcrumb_item"></x-breadcrumb>
     </div>
 @endsection
 @section('content')

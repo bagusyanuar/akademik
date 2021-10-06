@@ -16,41 +16,41 @@
     @yield('css')
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
-<x-navbar class="dark-navbar">
+<x-navbar class="elevation-1">
     <x-navbar.left-navbar :isPushMenu="true">
-        <x-navbar.item class="d-sm-inline-block"><a href="#" class="nav-link">Contact</a></x-navbar.item>
     </x-navbar.left-navbar>
     <x-navbar.right-navbar>
-        <x-navbar.item class="d-sm-inline-block"><a href="#" class="nav-link">Logout</a></x-navbar.item>
+        <x-navbar.item class="d-sm-inline-block"><a href="#" class="nav-link navbar-link-item">Logout</a></x-navbar.item>
     </x-navbar.right-navbar>
 
 </x-navbar>
-@php
-    $menuMaster = [['link' => '/', 'title' => 'User'],
-        ['link' => '/', 'title' => 'Admin'],
-        ['link' => '/', 'title' => 'Siswa'],];
-
-@endphp
 <x-sidebar class="sidebar-dark-primary elevation-1">
     <x-slot name="brand">
         <x-sidebar.brand></x-sidebar.brand>
     </x-slot>
     <x-slot name="menu">
         <x-sidebar.menu>
-            <x-sidebar.tree-menu title="Master" icon="fa fa-hdd-o" :children="$menuMaster"/>
+            <x-sidebar.item title="Dashboard" link="/" icon="fa fa-tachometer" />
+            <x-sidebar.header-menu title="Master"/>
+            <x-sidebar.tree-menu title="Pengguna" icon="fa fa-users">
+                <x-sidebar.item title="Admin" link="/admin" />
+                <x-sidebar.item title="Guru" link="/guru" />
+                <x-sidebar.item title="Siswa" link="/siswa" />
+                <x-sidebar.item title="Orang Tua" link="/orang-tua" />
+            </x-sidebar.tree-menu>
+            <x-sidebar.tree-menu title="Akademik" icon="fa fa-hdd-o">
+                <x-sidebar.item title="Periode" link="/periode" />
+                <x-sidebar.item title="Kelas" link="/kelas" />
+                <x-sidebar.item title="Mata Pelajaran" link="/mata-pelajaran" />
+            </x-sidebar.tree-menu>
             <x-sidebar.header-menu title="Transaction"/>
             <x-sidebar.item title="Menu Item 1" link="/" />
         </x-sidebar.menu>
     </x-slot>
 </x-sidebar>
-<div class="content-wrapper my-content-wrapper">
-    <div class="my-content">
-        <div class="my-content-title-wrapper">
-            <div>@yield('content-title')</div>
-        </div>
-        @yield('breadcrumb')
+<div class="content-wrapper p-3">
+        @yield('content-title')
         @yield('content')
-    </div>
 </div>
 </body>
 <script src="{{ asset('/jQuery/jquery-3.4.1.min.js') }}"></script>

@@ -4,18 +4,18 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class Card extends Component
+class Breadcrumb extends Component
 {
-    public $title;
+    public $item;
 
     /**
      * Create a new component instance.
      *
-     * @param string $title
+     * @param array $item
      */
-    public function __construct($title = 'Card')
+    public function __construct($item = [])
     {
-        $this->title = $title;
+        $this->item = $item;
     }
 
     /**
@@ -25,6 +25,6 @@ class Card extends Component
      */
     public function render()
     {
-        return view('components.card');
+        return view('components.breadcrumb');
     }
 }
