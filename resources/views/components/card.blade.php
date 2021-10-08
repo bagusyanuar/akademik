@@ -7,4 +7,9 @@
     <div class="card-body">
         {{ $slot }}
     </div>
+    @if($footer)
+        <div class="card-footer">
+            {{ isset($footer_slot) ? $footer_slot : '' }}
+        </div>
+    @endif
 </div>

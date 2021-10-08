@@ -56,4 +56,5 @@
 <script src="{{ asset('/jQuery/jquery-3.4.1.min.js') }}"></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.js') }}"></script>
 <script src="{{ asset ('/adminlte/js/adminlte.js') }}"></script>
+@yield('js')
 </html>

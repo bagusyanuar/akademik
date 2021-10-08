@@ -7,15 +7,18 @@ use Illuminate\View\Component;
 class Card extends Component
 {
     public $title;
+    public $footer;
 
     /**
      * Create a new component instance.
      *
      * @param string $title
+     * @param bool $footer
      */
-    public function __construct($title = 'Card')
+    public function __construct($title = 'Card', $footer = false)
     {
         $this->title = $title;
+        $this->footer = $footer;
     }
 
     /**

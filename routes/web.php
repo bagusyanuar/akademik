@@ -25,9 +25,9 @@ Route::get('/dashboard', function () {
 });
 
 Route::group(['prefix' => 'admin'], function (){
-    Route::get('/', function (){
-        return view('main.pengguna.admin.index');
-    });
+    Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'index']);
+    Route::get('/tambah', [\App\Http\Controllers\Admin\AdminController::class, 'addPage']);
+
 });
 
 
