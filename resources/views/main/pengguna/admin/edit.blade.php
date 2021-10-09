@@ -12,13 +12,13 @@
         ],
         [
             'link' => '/',
-            'title' => 'Tambah'
+            'title' => 'Edit'
         ],
     ];
 @endphp
 @section('content-title')
     <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mb-0">Halaman Tambah Admin</h4>
+        <h4 class="mb-0">Halaman Edit Admin</h4>
         <x-breadcrumb :item="$breadcrumb_item"></x-breadcrumb>
     </div>
 @endsection
@@ -33,12 +33,12 @@
     @endif
     <div class="row justify-content-center">
         <div class="col-6">
-            <form action="/admin/store" method="POST">
+            <form action="/admin/patch" method="POST">
                 <x-card title="Form Data Guru" class="mt-3" :footer="true">
-
                     @csrf
-                    <x-form.input id="username" name="username" label="Username"/>
-                    <x-form.input id="name" name="name" label="Nama Lengkap"/>
+                    <input type="hidden" id="id" name="id" value="{{ $data->id }}">
+                    <x-form.input id="username" name="username" label="Username" value="{{ $data->user->username }}"/>
+                    <x-form.input id="name" name="name" label="Nama Lengkap" value="{{ $data->nama }}"/>
                     <x-form.input type="password" id="password" name="password" label="Password"/>
                     <x-slot name="footer_slot">
                         <div class="text-right">

@@ -27,6 +27,9 @@ Route::get('/dashboard', function () {
 Route::group(['prefix' => 'admin'], function (){
     Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'index']);
     Route::get('/tambah', [\App\Http\Controllers\Admin\AdminController::class, 'addPage']);
+    Route::get('/edit/{id}', [\App\Http\Controllers\Admin\AdminController::class, 'editPage']);
+    Route::post('/store', [\App\Http\Controllers\Admin\AdminController::class, 'store']);
+    Route::post('/patch', [\App\Http\Controllers\Admin\AdminController::class, 'patch']);
 
 });
 

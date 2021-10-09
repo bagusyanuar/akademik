@@ -30,18 +30,26 @@
                 </x-slot>
                 <table id="my-table" class="table display">
                     <thead>
-                        <tr>
-                            <th width="10%">#</th>
-                            <th width="80%">Category Name</th>
-                            <th width="10%" class="text-center">Action</th>
-                        </tr>
+                    <tr>
+                        <th width="8%" class="text-center">#</th>
+                        <th width="20%">Username</th>
+                        <th width="60%">Nama Lengkap</th>
+                        <th width="12%" class="text-center">Action</th>
+                    </tr>
                     </thead>
                     <tbody>
+                    @foreach($data as $admin)
                         <tr>
-                            <td>1</td>
-                            <td>a</td>
-                            <td>basjdjdqwe</td>
+                            <td class="text-center">{{ $loop->index +1 }}</td>
+                            <td>{{ $admin->user->username }}</td>
+                            <td>{{ $admin->nama }}</td>
+                            <td>
+                                <a href="/admin/edit/{{ $admin->id }}" class="btn btn-warning"><i
+                                        class="fa fa-edit"></i></a>
+                                <button type="button" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                            </td>
                         </tr>
+                    @endforeach
                     </tbody>
                 </table>
             </x-card>
