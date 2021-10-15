@@ -33,4 +33,13 @@ Route::group(['prefix' => 'admin'], function (){
 
 });
 
+Route::group(['prefix' => 'guru'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\GuruController::class, 'index']);
+    Route::get('/tambah', [\App\Http\Controllers\Admin\GuruController::class, 'addPage']);
+    Route::get('/edit/{id}', [\App\Http\Controllers\Admin\GuruController::class, 'editPage']);
+    Route::post('/store', [\App\Http\Controllers\Admin\GuruController::class, 'store']);
+    Route::post('/patch', [\App\Http\Controllers\Admin\GuruController::class, 'patch']);
+    Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\GuruController::class, 'destroy']);
+});
+
 
