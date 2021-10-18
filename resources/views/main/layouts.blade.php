@@ -35,8 +35,8 @@
             <x-sidebar.tree-menu title="Pengguna" icon="fa fa-users">
                 <x-sidebar.item title="Admin" link="/admin" />
                 <x-sidebar.item title="Guru" link="/guru" />
-                <x-sidebar.item title="Siswa" link="/siswa" />
                 <x-sidebar.item title="Orang Tua" link="/orang-tua" />
+                <x-sidebar.item title="Siswa" link="/siswa" />
             </x-sidebar.tree-menu>
             <x-sidebar.tree-menu title="Akademik" icon="fa fa-hdd-o">
                 <x-sidebar.item title="Periode" link="/periode" />

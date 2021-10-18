@@ -42,4 +42,22 @@ Route::group(['prefix' => 'guru'], function (){
     Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\GuruController::class, 'destroy']);
 });
 
+Route::group(['prefix' => 'orang-tua'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\OrangTuaController::class, 'index']);
+    Route::get('/tambah', [\App\Http\Controllers\Admin\OrangTuaController::class, 'addPage']);
+    Route::get('/edit/{id}', [\App\Http\Controllers\Admin\OrangTuaController::class, 'editPage']);
+    Route::post('/store', [\App\Http\Controllers\Admin\OrangTuaController::class, 'store']);
+    Route::post('/patch', [\App\Http\Controllers\Admin\OrangTuaController::class, 'patch']);
+    Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\OrangTuaController::class, 'destroy']);
+});
+
+Route::group(['prefix' => 'siswa'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\SiswaController::class, 'index']);
+    Route::get('/tambah', [\App\Http\Controllers\Admin\SiswaController::class, 'addPage']);
+    Route::get('/edit/{id}', [\App\Http\Controllers\Admin\SiswaController::class, 'editPage']);
+    Route::post('/store', [\App\Http\Controllers\Admin\SiswaController::class, 'store']);
+    Route::post('/patch', [\App\Http\Controllers\Admin\SiswaController::class, 'patch']);
+    Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\SiswaController::class, 'destroy']);
+});
+
 
