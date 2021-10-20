@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ asset('/adminlte/css/adminlte.min.css')}}">
     <link rel="stylesheet" href="{{ asset('style/main.css') }}">
     <link rel="stylesheet" href="{{ asset('/sweetalert/sweetalert2.css') }}">
+    <link href="{{ asset('/adminlte/plugins/select2/select2.css') }}" rel="stylesheet">
     <script src="{{ asset('/sweetalert/sweetalert2.js') }}"></script>
     @yield('css')
 </head>
@@ -56,5 +57,7 @@
 <script src="{{ asset('/jQuery/jquery-3.4.1.min.js') }}"></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.js') }}"></script>
 <script src="{{ asset ('/adminlte/js/adminlte.js') }}"></script>
+<script src="{{ asset('/adminlte/plugins/select2/select2.js') }}"></script>
+<script src="{{ asset('/adminlte/plugins/select2/select2.full.js') }}"></script>
 @yield('js')
 </html>

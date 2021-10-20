@@ -40,6 +40,7 @@ class JadwalController extends CustomController
     {
         try {
             $data = Jadwal::with(['periode', 'kelas', 'mataPelajaran'])->get();
+            $data = $data->groupBy('hari');
             return $this->jsonResponse([
                 'msg' => 'success',
                 'data' => $data

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Helper\CustomController;
+use App\Models\Kelas;
 use App\Models\OrangTua;
 use App\Models\Siswa;
 use App\Models\User;
@@ -26,7 +27,9 @@ class SiswaController extends CustomController
 
     public function addPage()
     {
-        return view('main.pengguna.siswa.add');
+        $data_kelas = Kelas::all();
+        $data_orang_tua = OrangTua::all();
+        return view('main.pengguna.siswa.add')->with(['data_kelas' => $data_kelas, 'data_orang_tua' => $data_orang_tua]);
     }
 
     public function store()
@@ -54,58 +57,44 @@ class SiswaController extends CustomController
 
     public function editPage($id)
     {
-        $data = OrangTua::with('user')->where('id', $id)->firstOrFail();
-        return view('main.pengguna.orang-tua.edit')->with(['data' => $data]);
+        $data = Siswa::with(['orangTua', 'kelas'])->where('id', $id)->firstOrFail();
+        $data_kelas = Kelas::all();
+        $data_orang_tua = OrangTua::all();
+        return view('main.pengguna.siswa.edit')->with(['data' => $data, 'data_kelas' => $data_kelas, 'data_orang_tua' => $data_orang_tua]);
     }
 
     public function patch()
     {
-        DB::beginTransaction();
         try {
             $id = $this->postField('id');
-            $username = $this->postField('username');
+            $siswa = Siswa::find($id);
             $name = $this->postField('name');
-            $password = $this->postField('password');
-            $orang_tua = OrangTua::find($id);
-            $orang_tua->nama = $name;
-            $orang_tua->no_hp = $this->postField('no_hp');
-            $orang_tua->alamat = $this->postField('alamat');
-            $orang_tua->save();
+            $tgl_lahir = $this->postField('tgl_lahir');
+            $alamat = $this->postField('alamat');
+            $orang_tua = $this->postField('orang_tua') !== '' ? $this->postField('orang_tua') : null;
+            $kelas = $this->postField('kelas') !== '' ? $this->postField('kelas') : null;
 
-            $user = User::find($orang_tua->user_id);
-            $user->username = $username;
-            if ($password !== '') {
-                $user->password = Hash::make($password);
-            }
-            $user->save();
-            DB::commit();
-            return redirect('/orang-tua');
+            $siswa->nama = $name;
+            $siswa->tgl_lahir = $tgl_lahir;
+            $siswa->alamat = $alamat;
+            $siswa->orang_tua_id = $orang_tua;
+            $siswa->kelas_id = $kelas;
+            $siswa->save();
+            return redirect('/siswa');
         } catch (\Exception $e) {
-            DB::rollBack();
             return redirect()->back()->with(['failed' => 'Terjadi Kesalahan...' . $e]);
         }
     }
 
     public function destroy($id)
     {
-        DB::beginTransaction();
         try {
-            $user = User::find($id);
-            if (!$user) {
-                return response()->json([
-                    'msg' => 'Guru Tidak Di Temukan',
-                    'code' => 202
-                ]);
-            }
-            $user->orangTua()->delete();
-            $user->delete();
-            DB::commit();
+            $siswa = Siswa::destroy($id);
             return response()->json([
                 'msg' => 'success',
                 'code' => 200
             ]);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'msg' => 'Terjadi Kesalahan' . $e,
                 'code' => 500

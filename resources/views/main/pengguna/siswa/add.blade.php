@@ -7,7 +7,7 @@
             'title' => 'Dashboard'
         ],
         [
-            'link' => '/orang-tua',
+            'link' => '/siswa',
             'title' => 'Siswa'
         ],
         [
@@ -16,6 +16,15 @@
         ],
     ];
 @endphp
+
+@section('css')
+    <style>
+        .select2-selection {
+            height: 40px !important;
+            line-height: 40px !important;
+        }
+    </style>
+@endsection
 @section('content-title')
     <div class="d-flex justify-content-between align-items-center">
         <h4 class="mb-0">Halaman Tambah Siswa</h4>
@@ -36,10 +45,28 @@
             <form action="/siswa/store" method="POST">
                 <x-card title="Form Data Orang Tua Siswa" class="mt-3" :footer="true">
                     @csrf
-                    <x-form.input id="username" name="username" label="Username"/>
                     <x-form.input id="name" name="name" label="Nama Lengkap"/>
-                    <x-form.input type="password" id="password" name="password" label="Password"/>
-                    <x-form.input type="number" id="no_hp" name="no_hp" label="No. Hp"/>
+                    <div class="form-group w-100">
+                        <label for="kelas">Kelas</label>
+                        <x-form.select2 id="kelas" name="kelas">
+                            @foreach($data_kelas as $kelas)
+                                <option value="{{ $kelas->id }}">{{ $kelas->nama }}</option>
+                            @endforeach
+                        </x-form.select2>
+                    </div>
+                    <div class="form-group w-100">
+                        <label for="orang_tua">Orang Tua</label>
+                        <x-form.select2 id="orang_tua" name="orang_tua">
+                            <option value="">--Pilih Orang Tua---</option>
+                            @foreach($data_orang_tua as $orang_tua)
+                                <option value="{{ $orang_tua->id }}">{{ $orang_tua->nama }}</option>
+                            @endforeach
+                        </x-form.select2>
+                    </div>
+                    <div class="form-group">
+                        <label for="tgl_lahir">Kelas</label>
+                        <input type="date" class="form-control" id="tgl_lahir" name="tgl_lahir">
+                    </div>
                     <x-form.textarea id="alamat" name="alamat" label="Alamat"></x-form.textarea>
                     <x-slot name="footer_slot">
                         <div class="text-right">
@@ -50,4 +77,15 @@
             </form>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script src="{{ asset('/helper/helper.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({
+                width: 'resolve'
+            });
+        });
+    </script>
 @endsection

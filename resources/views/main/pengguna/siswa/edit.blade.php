@@ -7,8 +7,8 @@
             'title' => 'Dashboard'
         ],
         [
-            'link' => '/orang-tua',
-            'title' => 'Orang Tua Siswa'
+            'link' => '/siswa',
+            'title' => 'Siswa'
         ],
         [
             'link' => '/',
@@ -18,9 +18,18 @@
 @endphp
 @section('content-title')
     <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mb-0">Halaman Edit Orang Tua Siswa</h4>
+        <h4 class="mb-0">Halaman Edit Siswa</h4>
         <x-breadcrumb :item="$breadcrumb_item"></x-breadcrumb>
     </div>
+@endsection
+
+@section('css')
+    <style>
+        .select2-selection {
+            height: 40px !important;
+            line-height: 40px !important;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -33,14 +42,32 @@
     @endif
     <div class="row justify-content-center">
         <div class="col-6">
-            <form action="/orang-tua/patch" method="POST">
+            <form action="/siswa/patch" method="POST">
                 <x-card title="Form Data Orang Tua Siswa" class="mt-3" :footer="true">
                     @csrf
                     <input type="hidden" id="id" name="id" value="{{ $data->id }}">
-                    <x-form.input id="username" name="username" label="Username" value="{{ $data->user->username }}"/>
                     <x-form.input id="name" name="name" label="Nama Lengkap" value="{{ $data->nama }}"/>
-                    <x-form.input type="password" id="password" name="password" label="Password"/>
-                    <x-form.input type="number" id="no_hp" name="no_hp" label="No. Hp" value="{{ $data->no_hp }}"/>
+                    <div class="form-group w-100">
+                        <label for="kelas">Kelas</label>
+                        <x-form.select2 id="kelas" name="kelas">
+                            @foreach($data_kelas as $kelas)
+                                <option value="{{ $kelas->id }}" {{ $data->kelas->id == $kelas->id ? 'selected' : '' }}>{{ $kelas->nama }}</option>
+                            @endforeach
+                        </x-form.select2>
+                    </div>
+                    <div class="form-group w-100">
+                        <label for="orang_tua">Orang Tua</label>
+                        <x-form.select2 id="orang_tua" name="orang_tua">
+                            <option value="">--Pilih Orang Tua---</option>
+                            @foreach($data_orang_tua as $orang_tua)
+                                <option value="{{ $orang_tua->id }}" {{ $data->orangTua->id == $orang_tua->id ? 'selected' : '' }}>{{ $orang_tua->nama }}</option>
+                            @endforeach
+                        </x-form.select2>
+                    </div>
+                    <div class="form-group">
+                        <label for="tgl_lahir">Kelas</label>
+                        <input type="date" class="form-control" id="tgl_lahir" name="tgl_lahir" value="{{ $data->tgl_lahir }}">
+                    </div>
                     <x-form.textarea id="alamat" name="alamat" label="Alamat">{{ $data->alamat }}</x-form.textarea>
                     <x-slot name="footer_slot">
                         <div class="text-right">
@@ -51,4 +78,15 @@
             </form>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script src="{{ asset('/helper/helper.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({
+                width: 'resolve'
+            });
+        });
+    </script>
 @endsection

@@ -36,8 +36,8 @@
                         <th width="10%">Kelas</th>
                         <th width="15%">Orang Tua</th>
                         <th width="15%">Tanggal Lahir</th>
-                        <th width="30%">Alamat</th>
-                        <th width="12%" class="text-center">Action</th>
+                        <th width="20%">Alamat</th>
+                        <th width="20%" class="text-center">Action</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -45,8 +45,8 @@
                         <tr>
                             <td class="text-center">{{ $loop->index +1 }}</td>
                             <td>{{ $siswa->nama }}</td>
-                            <td>{{ $siswa->orangTua->nama }}</td>
-                            <td>{{ $siswa->kelas->nama }}</td>
+                            <td>{{ $siswa->kelas === null ? '-' : $siswa->kelas->nama }}</td>
+                            <td>{{ $siswa->orangTua === null ? '-' : $siswa->orangTua->nama }}</td>
                             <td>{{ $siswa->tgl_lahir }}</td>
                             <td>{{ $siswa->alamat }}</td>
                             <td>
@@ -79,9 +79,9 @@
                         let data = {
                             '_token': '{{ csrf_token() }}'
                         };
-                        let response = await $.post('/orang-tua/destroy/' + id, data);
+                        let response = await $.post('/siswa/destroy/' + id, data);
                         if (response['code'] === 200) {
-                            window.location.href = '/orang-tua';
+                            window.location.href = '/siswa';
                         } else {
                             sweetAlertMessage('Peringatan!', response['msg'], 'warning')
                         }
