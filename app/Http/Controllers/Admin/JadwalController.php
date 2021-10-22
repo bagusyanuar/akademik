@@ -8,12 +8,20 @@ use App\Helper\CustomController;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
+use App\Models\Periode;
 
 class JadwalController extends CustomController
 {
     public function __construct()
     {
         parent::__construct();
+    }
+
+    public function index()
+    {
+        $periode = Periode::all();
+        $kelas = Kelas::all();
+        return view('main.akademik.jadwal.index')->with(['periode' => $periode, 'kelas' => $kelas]);
     }
 
     public function store()

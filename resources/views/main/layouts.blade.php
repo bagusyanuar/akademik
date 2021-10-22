@@ -43,6 +43,7 @@
                 <x-sidebar.item title="Periode" link="/periode" />
                 <x-sidebar.item title="Kelas" link="/kelas" />
                 <x-sidebar.item title="Mata Pelajaran" link="/mata-pelajaran" />
+                <x-sidebar.item title="Jadwal Pelajaran" link="/jadwal" />
             </x-sidebar.tree-menu>
             <x-sidebar.header-menu title="Transaction"/>
             <x-sidebar.item title="Menu Item 1" link="/" />

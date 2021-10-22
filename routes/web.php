@@ -60,4 +60,37 @@ Route::group(['prefix' => 'siswa'], function (){
     Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\SiswaController::class, 'destroy']);
 });
 
+Route::group(['prefix' => 'periode'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\PeriodeController::class, 'index']);
+    Route::get('/tambah', [\App\Http\Controllers\Admin\PeriodeController::class, 'addPage']);
+    Route::post('/store', [\App\Http\Controllers\Admin\PeriodeController::class, 'store']);
+});
+
+Route::group(['prefix' => 'kelas'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\KelasController::class, 'index']);
+    Route::get('/tambah', [\App\Http\Controllers\Admin\KelasController::class, 'addPage']);
+    Route::post('/store', [\App\Http\Controllers\Admin\KelasController::class, 'store']);
+    Route::get('/edit/{id}', [\App\Http\Controllers\Admin\KelasController::class, 'editPage']);
+    Route::post('/patch', [\App\Http\Controllers\Admin\KelasController::class, 'patch']);
+    Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\KelasController::class, 'destroy']);
+});
+
+Route::group(['prefix' => 'mata-pelajaran'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\MataPelajaranController::class, 'index']);
+    Route::get('/tambah', [\App\Http\Controllers\Admin\MataPelajaranController::class, 'addPage']);
+    Route::post('/store', [\App\Http\Controllers\Admin\MataPelajaranController::class, 'store']);
+    Route::get('/edit/{id}', [\App\Http\Controllers\Admin\MataPelajaranController::class, 'editPage']);
+    Route::post('/patch', [\App\Http\Controllers\Admin\MataPelajaranController::class, 'patch']);
+    Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\MataPelajaranController::class, 'destroy']);
+});
+
+Route::group(['prefix' => 'jadwal'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\JadwalController::class, 'index']);
+    Route::get('/tambah', [\App\Http\Controllers\Admin\JadwalController::class, 'addPage']);
+    Route::post('/store', [\App\Http\Controllers\Admin\JadwalController::class, 'store']);
+    Route::get('/edit/{id}', [\App\Http\Controllers\Admin\JadwalController::class, 'editPage']);
+    Route::post('/patch', [\App\Http\Controllers\Admin\JadwalController::class, 'patch']);
+    Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\JadwalController::class, 'destroy']);
+});
+
 
