@@ -88,9 +88,7 @@ Route::group(['prefix' => 'jadwal'], function (){
     Route::get('/', [\App\Http\Controllers\Admin\JadwalController::class, 'index']);
     Route::get('/tambah', [\App\Http\Controllers\Admin\JadwalController::class, 'addPage']);
     Route::post('/store', [\App\Http\Controllers\Admin\JadwalController::class, 'store']);
-    Route::get('/edit/{id}', [\App\Http\Controllers\Admin\JadwalController::class, 'editPage']);
-    Route::post('/patch', [\App\Http\Controllers\Admin\JadwalController::class, 'patch']);
-    Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\JadwalController::class, 'destroy']);
+    Route::get('/list', [\App\Http\Controllers\Admin\JadwalController::class, 'getJadwal']);
 });
 
 

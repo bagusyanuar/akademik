@@ -21,7 +21,11 @@ class JadwalController extends CustomController
     {
         $periode = Periode::all();
         $kelas = Kelas::all();
-        return view('main.akademik.jadwal.index')->with(['periode' => $periode, 'kelas' => $kelas]);
+        $mata_pelajaran = MataPelajaran::all();
+        return view('main.akademik.jadwal.index')->with([
+            'periode' => $periode,
+            'kelas' => $kelas,
+            'mata_pelajaran' => $mata_pelajaran]);
     }
 
     public function store()
@@ -39,7 +43,7 @@ class JadwalController extends CustomController
             ];
             $this->insert(MataPelajaran::class, $data);
             return $this->jsonResponse('success', 200);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->jsonResponse($e->getMessage(), 500);
         }
     }
@@ -47,13 +51,22 @@ class JadwalController extends CustomController
     public function getJadwal()
     {
         try {
-            $data = Jadwal::with(['periode', 'kelas', 'mataPelajaran'])->get();
+            $periode = $this->field('periode');
+            $kelas = $this->field('kelas');
+            $semester = $this->field('semester');
+            $data = Jadwal::with(['periode', 'kelas', 'mataPelajaran'])
+                ->where([
+                    ['periode_id', '=', $periode],
+                    ['semester', '=', $semester],
+                    ['kelas_id', '=', $kelas],
+                ])
+                ->orderBy('mulai', 'ASC')
+                ->get();
             $data = $data->groupBy('hari');
-            return $this->jsonResponse([
-                'msg' => 'success',
+            return $this->jsonResponse('success', 200, [
                 'data' => $data
-            ], 200);
-        }catch (\Exception $e){
+            ]);
+        } catch (\Exception $e) {
             return $this->jsonResponse($e->getMessage(), 500);
         }
     }
