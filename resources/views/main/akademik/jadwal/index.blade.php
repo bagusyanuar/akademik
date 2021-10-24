@@ -164,11 +164,14 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modal-schedule" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modal-schedule" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Jadwal Hari <span id="title-hari" class="title-hari"></span></h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Tambah Jadwal Hari <span id="title-hari"
+                                                                                            class="title-hari"></span>
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -183,14 +186,25 @@
                             @endforeach
                         </x-form.select2>
                     </div>
-                    <div class="form-group w-100">
-                        <label for="jam">Jam Pelajaran</label>
-                        <input type="time" id="jam" name="jam" class="form-control">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group w-100">
+                                <label for="mulai">Jam Mulai</label>
+                                <input type="time" id="mulai" name="mulai" class="form-control" value="07:00">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group w-100">
+                                <label for="selesai">Jam Selesai</label>
+                                <input type="time" id="selesai" name="selesai" class="form-control" value="07:00">
+                            </div>
+                        </div>
                     </div>
+
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary btn-save-subject">Tambah</button>
                 </div>
             </div>
         </div>
@@ -206,7 +220,8 @@
                 '<tr>' +
                 '<th scope="col">#</th>' +
                 '<th scope="col">Mata Pelajaran</th>' +
-                '<th scope="col">Jam</th>' +
+                '<th scope="col">Waktu</th>' +
+                '<th scope="col">Aksi</th>' +
                 '</tr>' +
                 '</thead>' +
                 '<tbody>' + list +
@@ -215,11 +230,12 @@
         }
 
         function singleList(index, value) {
-            let {mulai, selesai} = value;
+            let {mulai, selesai, id} = value;
             return '<tr>' +
                 '<th scope="row">' + index + '</th>' +
                 '<td>' + value['mata_pelajaran']['nama'] + '</td>' +
                 '<td>' + mulai.substr(0, 5) + ' - ' + selesai.substr(0, 5) + '</td>' +
+                '<td><button type="button" class="btn btn-sm btn-danger btn-delete-jadwal" data-id="' + id + '"><iclass="fa fa-trash"></i></button></td>' +
                 '</tr>';
         }
 
@@ -247,11 +263,44 @@
                             list += singleList((key_jadwal + 1), data);
                         });
                         element.append(elTable(list));
+                        $('.btn-delete-jadwal').on('click', function () {
+
+                        })
                     } else {
                         element.append(elEmpty());
                     }
                     console.log(jadwal)
                 });
+                console.log(response)
+            } catch (e) {
+                console.log(e)
+            }
+        }
+
+        async function addJadwal() {
+            try {
+                let data = {
+                    _token: '{{csrf_token()}}',
+                    periode: $('#periode').val(),
+                    hari: $('#hari').val(),
+                    kelas: $('#kelas').val(),
+                    mata_pelajaran: $('#mata_pelajaran').val(),
+                    mulai: $('#mulai').val(),
+                    selesai: $('#selesai').val(),
+                    semester: $('#semester').val(),
+                };
+                let response = await $.post('/jadwal/store', data);
+
+                if (response['status'] === 200) {
+                    let element = $('#panel-' + $('#hari').val());
+                    element.empty();
+                    let list = '';
+                    $.each(response['payload']['data'], function (k, v) {
+                        list += singleList((k + 1), v);
+                    });
+                    element.append(elTable(list));
+                }
+                $('#modal-schedule').modal('hide');
                 console.log(response)
             } catch (e) {
                 console.log(e)
@@ -270,6 +319,11 @@
                 $('#title-hari').html(day);
                 $('#hari').val(day);
                 $('#modal-schedule').modal('show');
+            });
+
+            $('.btn-save-subject').on('click', function () {
+                addJadwal()
+
             });
         });
     </script>

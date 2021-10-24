@@ -35,14 +35,31 @@ class JadwalController extends CustomController
             $hari = $this->postField('hari');
             $kelas = $this->postField('kelas');
             $mata_pelajaran = $this->postField('mata_pelajaran');
+            $mulai = $this->postField('mulai');
+            $selesai = $this->postField('selesai');
+            $semester = $this->postField('semester');
             $data = [
                 'periode_id' => $periode,
                 'hari' => $hari,
                 'kelas_id' => $kelas,
                 'mata_pelajaran_id' => $mata_pelajaran,
+                'mulai' => $mulai,
+                'selesai' => $selesai,
+                'semester' => $semester,
             ];
-            $this->insert(MataPelajaran::class, $data);
-            return $this->jsonResponse('success', 200);
+            $this->insert(Jadwal::class, $data);
+            $jadwal = Jadwal::with(['periode', 'kelas', 'mataPelajaran'])
+                ->where([
+                    ['periode_id', '=', $periode],
+                    ['semester', '=', $semester],
+                    ['kelas_id', '=', $kelas],
+                    ['hari', '=', $hari],
+                ])
+                ->orderBy('mulai', 'ASC')
+                ->get();
+            return $this->jsonResponse('success', 200, [
+                'data' => $jadwal
+            ]);
         } catch (\Exception $e) {
             return $this->jsonResponse($e->getMessage(), 500);
         }
@@ -70,4 +87,5 @@ class JadwalController extends CustomController
             return $this->jsonResponse($e->getMessage(), 500);
         }
     }
+
 }
