@@ -89,6 +89,12 @@ Route::group(['prefix' => 'jadwal'], function (){
     Route::get('/tambah', [\App\Http\Controllers\Admin\JadwalController::class, 'addPage']);
     Route::post('/store', [\App\Http\Controllers\Admin\JadwalController::class, 'store']);
     Route::get('/list', [\App\Http\Controllers\Admin\JadwalController::class, 'getJadwal']);
+    Route::post('/destroy', [\App\Http\Controllers\Admin\JadwalController::class, 'destroy']);
+});
+
+Route::group(['prefix' => 'pelajaran-kelas'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\PelajaranKelasController::class, 'index']);
+    Route::get('/list', [\App\Http\Controllers\Admin\PelajaranKelasController::class, 'getList']);
 });
 
 

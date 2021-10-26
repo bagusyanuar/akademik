@@ -88,4 +88,29 @@ class JadwalController extends CustomController
         }
     }
 
+    public function destroy()
+    {
+        try {
+            $periode = $this->postField('periode');
+            $kelas = $this->postField('kelas');
+            $semester = $this->postField('semester');
+            $hari = $this->postField('hari');
+            $id = $this->postField('id');
+            Jadwal::destroy($id);
+            $jadwal = Jadwal::with(['periode', 'kelas', 'mataPelajaran'])
+                ->where([
+                    ['periode_id', '=', $periode],
+                    ['semester', '=', $semester],
+                    ['kelas_id', '=', $kelas],
+                    ['hari', '=', $hari],
+                ])
+                ->orderBy('mulai', 'ASC')
+                ->get();
+            return $this->jsonResponse('success', 200, [
+                'data' => $jadwal
+            ]);
+        } catch (\Exception $e) {
+            return $this->jsonResponse($e->getMessage(), 500);
+        }
+    }
 }

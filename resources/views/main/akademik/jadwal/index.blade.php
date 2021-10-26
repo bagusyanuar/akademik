@@ -229,13 +229,13 @@
                 '</table>';
         }
 
-        function singleList(index, value) {
+        function singleList(index, value, hari) {
             let {mulai, selesai, id} = value;
             return '<tr>' +
                 '<th scope="row">' + index + '</th>' +
                 '<td>' + value['mata_pelajaran']['nama'] + '</td>' +
                 '<td>' + mulai.substr(0, 5) + ' - ' + selesai.substr(0, 5) + '</td>' +
-                '<td><button type="button" class="btn btn-sm btn-danger btn-delete-jadwal" data-id="' + id + '"><iclass="fa fa-trash"></i></button></td>' +
+                '<td><button type="button" class="btn btn-sm btn-danger btn-delete-jadwal" data-id="' + id + '" data-day="' + hari + '"><i class="fa fa-trash"></i></button></td>' +
                 '</tr>';
         }
 
@@ -243,6 +243,30 @@
             return '<div class="d-block text-center">' +
                 '<span class="font-weight-bold text-center d-block mb-1">Jadwal Belum Tersedia</span>' +
                 '</div>';
+        }
+
+        function deleteJadwal(formData) {
+            confirmSweetAlert('Konfirmasi', 'Apakah Anda Yakin Menghapus Data?', async function () {
+                try {
+                    let data = {
+                        '_token': '{{ csrf_token() }}',
+                        hari: formData['hari'],
+                        periode: formData['periode'],
+                        kelas: formData['kelas'],
+                        semester: formData['semester'],
+                        id: formData['id'],
+                    };
+                    let response = await $.post('/jadwal/destroy/', data);
+                    console.log(response)
+                    if (response['status'] === 200) {
+                        reloadJadwal(response, formData['hari']);
+                    } else {
+                        sweetAlertMessage('Peringatan!', response['msg'], 'warning')
+                    }
+                } catch (e) {
+                    console.log(e)
+                }
+            });
         }
 
         async function getJadwal() {
@@ -260,11 +284,20 @@
                     if (jadwal !== undefined) {
                         let list = '';
                         $.each(jadwal, function (key_jadwal, data) {
-                            list += singleList((key_jadwal + 1), data);
+                            list += singleList((key_jadwal + 1), data, v);
                         });
                         element.append(elTable(list));
                         $('.btn-delete-jadwal').on('click', function () {
-
+                            let id = this.dataset.id;
+                            let day = this.dataset.day;
+                            let data = {
+                                id: id,
+                                periode: $('#periode').val(),
+                                hari: day,
+                                kelas: $('#kelas').val(),
+                                semester: $('#semester').val(),
+                            };
+                            deleteJadwal(data);
                         })
                     } else {
                         element.append(elEmpty());
@@ -290,20 +323,39 @@
                     semester: $('#semester').val(),
                 };
                 let response = await $.post('/jadwal/store', data);
-
                 if (response['status'] === 200) {
-                    let element = $('#panel-' + $('#hari').val());
-                    element.empty();
-                    let list = '';
-                    $.each(response['payload']['data'], function (k, v) {
-                        list += singleList((k + 1), v);
-                    });
-                    element.append(elTable(list));
+                    reloadJadwal(response, $('#hari').val());
                 }
                 $('#modal-schedule').modal('hide');
                 console.log(response)
             } catch (e) {
                 console.log(e)
+            }
+        }
+
+        function reloadJadwal(response, hari) {
+            let element = $('#panel-' + hari);
+            element.empty();
+            let list = '';
+            if (response['payload']['data'].length > 0) {
+                $.each(response['payload']['data'], function (k, v) {
+                    list += singleList((k + 1), v, hari);
+                });
+                element.append(elTable(list));
+                $('.btn-delete-jadwal').on('click', function () {
+                    let id = this.dataset.id;
+                    let day = this.dataset.day;
+                    let data = {
+                        id: id,
+                        periode: $('#periode').val(),
+                        hari: day,
+                        kelas: $('#kelas').val(),
+                        semester: $('#semester').val(),
+                    };
+                    deleteJadwal(data);
+                })
+            }else {
+                element.append(elEmpty());
             }
         }
 
