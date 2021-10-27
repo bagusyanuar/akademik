@@ -123,21 +123,6 @@
 @section('js')
     <script src="{{ asset('/helper/helper.js') }}"></script>
     <script>
-        function elTable(list) {
-            return '<table class="table">' +
-                '<thead>' +
-                '<tr>' +
-                '<th scope="col">#</th>' +
-                '<th scope="col">Mata Pelajaran</th>' +
-                '<th scope="col">Waktu</th>' +
-                '<th scope="col">Aksi</th>' +
-                '</tr>' +
-                '</thead>' +
-                '<tbody>' + list +
-                '</tbody>' +
-                '</table>';
-        }
-
         function singleList(index, value) {
             let {id} = value;
             return '<tr>' +
@@ -148,11 +133,33 @@
         }
 
         function elEmpty() {
-            return '<div class="d-block text-center">' +
-                '<span class="font-weight-bold text-center d-block mb-1">Pelajaran Belum Tersedia</span>' +
+            return '<div class="d-block text-center w-100">' +
+                '<span class="font-weight-bold text-center d-block mb-1 w-100">Pelajaran Belum Tersedia</span>' +
                 '</div>';
         }
 
+        function reloadTable(data)
+        {
+            let element = $('#panel-pelajaran');
+            element.empty();
+            if(data.length > 0 ) {
+                $.each(data, function (k, v) {
+                    element.append(singleList((k + 1), v));
+                })
+                $('.btn-delete-jadwal').on('click', function () {
+                    let id = this.dataset.id;
+                    let data = {
+                        id: id,
+                        periode: $('#periode').val(),
+                        kelas: $('#kelas').val(),
+                        semester: $('#semester').val(),
+                    };
+                    deletePelajaranKelas(data);
+                })
+            }else {
+                element.append(elEmpty());
+            }
+        }
         async function getList() {
             try {
                 let periode = $('#periode').val();
@@ -160,36 +167,26 @@
                 let semester = $('#semester').val();
                 let response = await $.get('/pelajaran-kelas/list?periode=' + periode + '&kelas=' + kelas + '&semester=' + semester);
                 let data = response['payload']['data'];
-                let element = $('#panel-pelajaran');
-                element.empty();
-                if(data.length > 0 ) {
-                    $.each(data, function (k, v) {
-                        element.append(singleList((k + 1), v));
-                    })
-                }else {
-                    element.append(elEmpty());
-                }
+                reloadTable(data);
                 console.log(response)
             } catch (e) {
                 console.log(e)
             }
         }
 
-        async function addJadwal() {
+        async function addPelajaranKelas() {
             try {
                 let data = {
                     _token: '{{csrf_token()}}',
                     periode: $('#periode').val(),
-                    hari: $('#hari').val(),
                     kelas: $('#kelas').val(),
                     mata_pelajaran: $('#mata_pelajaran').val(),
-                    mulai: $('#mulai').val(),
-                    selesai: $('#selesai').val(),
                     semester: $('#semester').val(),
                 };
-                let response = await $.post('/jadwal/store', data);
+                let response = await $.post('/pelajaran-kelas/store', data);
                 if (response['status'] === 200) {
-                    reloadJadwal(response, $('#hari').val());
+                    let data = response['payload']['data'];
+                    reloadTable(data)
                 }
                 $('#modal-schedule').modal('hide');
                 console.log(response)
@@ -198,30 +195,28 @@
             }
         }
 
-        function reloadJadwal(response, hari) {
-            let element = $('#panel-' + hari);
-            element.empty();
-            let list = '';
-            if (response['payload']['data'].length > 0) {
-                $.each(response['payload']['data'], function (k, v) {
-                    list += singleList((k + 1), v, hari);
-                });
-                element.append(elTable(list));
-                $('.btn-delete-jadwal').on('click', function () {
-                    let id = this.dataset.id;
-                    let day = this.dataset.day;
+        function deletePelajaranKelas(formData) {
+            confirmSweetAlert('Konfirmasi', 'Apakah Anda Yakin Menghapus Data?', async function () {
+                try {
                     let data = {
-                        id: id,
-                        periode: $('#periode').val(),
-                        hari: day,
-                        kelas: $('#kelas').val(),
-                        semester: $('#semester').val(),
+                        '_token': '{{ csrf_token() }}',
+                        periode: formData['periode'],
+                        kelas: formData['kelas'],
+                        semester: formData['semester'],
+                        id: formData['id'],
                     };
-                    deleteJadwal(data);
-                })
-            }else {
-                element.append(elEmpty());
-            }
+                    let response = await $.post('/pelajaran-kelas/destroy/', data);
+                    console.log(response)
+                    if (response['status'] === 200) {
+                        let data = response['payload']['data'];
+                        reloadTable(data);
+                    } else {
+                        sweetAlertMessage('Peringatan!', response['msg'], 'warning')
+                    }
+                } catch (e) {
+                    console.log(e)
+                }
+            });
         }
 
         $(document).ready(function () {
@@ -249,8 +244,7 @@
             });
 
             $('.btn-save-subject').on('click', function () {
-                addJadwal()
-
+                addPelajaranKelas();
             });
         });
     </script>

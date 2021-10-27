@@ -50,4 +50,56 @@ class PelajaranKelasController extends CustomController
         }
 
     }
+
+    public function store()
+    {
+        try {
+            $periode = $this->postField('periode');
+            $kelas = $this->postField('kelas');
+            $mata_pelajaran = $this->postField('mata_pelajaran');
+            $semester = $this->postField('semester');
+            $data = [
+                'periode_id' => $periode,
+                'kelas_id' => $kelas,
+                'mata_pelajaran_id' => $mata_pelajaran,
+                'semester' => $semester,
+            ];
+            $this->insert(PelajaranKelas::class, $data);
+            $pelajaran_kelas = PelajaranKelas::with(['mataPelajaran'])
+                ->where([
+                    ['periode_id', '=', $periode],
+                    ['semester', '=', $semester],
+                    ['kelas_id', '=', $kelas],
+                ])
+                ->get();
+            return $this->jsonResponse('success', 200, [
+                'data' => $pelajaran_kelas
+            ]);
+        } catch (\Exception $e) {
+            return $this->jsonResponse($e->getMessage(), 500);
+        }
+    }
+
+    public function destroy()
+    {
+        try {
+            $periode = $this->postField('periode');
+            $kelas = $this->postField('kelas');
+            $semester = $this->postField('semester');
+            $id = $this->postField('id');
+            PelajaranKelas::destroy($id);
+            $pelajaran_kelas = PelajaranKelas::with(['mataPelajaran'])
+                ->where([
+                    ['periode_id', '=', $periode],
+                    ['semester', '=', $semester],
+                    ['kelas_id', '=', $kelas],
+                ])
+                ->get();
+            return $this->jsonResponse('success', 200, [
+                'data' => $pelajaran_kelas
+            ]);
+        } catch (\Exception $e) {
+            return $this->jsonResponse($e->getMessage(), 500);
+        }
+    }
 }

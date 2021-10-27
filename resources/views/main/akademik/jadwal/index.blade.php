@@ -178,12 +178,9 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="hari" value="">
-                    <div class="form-group w-100">
+                    <div class="form-group w-100" id="panel-mapel">
                         <label for="mata_pelajaran">Mata Pelajaran</label>
                         <x-form.select2 id="mata_pelajaran" name="mata_pelajaran">
-                            @foreach($mata_pelajaran as $pelajaran)
-                                <option value="{{ $pelajaran->id }}">{{ $pelajaran->nama }}</option>
-                            @endforeach
                         </x-form.select2>
                     </div>
                     <div class="row">
@@ -329,7 +326,7 @@
                 $('#modal-schedule').modal('hide');
                 console.log(response)
             } catch (e) {
-                console.log(e)
+                sweetAlertMessage('Gagal', 'Gagal Menambahan Jadwal!', 'error');
             }
         }
 
@@ -359,6 +356,42 @@
             }
         }
 
+        function elCombo(data)
+        {
+            console.log(data)
+            let element = $('#panel-mapel');
+            element.empty();
+            let parent = '<label for="mata_pelajaran">Mata Pelajaran</label>' +
+                '<select class="select2" name="mata_pelajaran" id="mata_pelajaran" style="width: 100%;"></select>';
+            element.append(parent);
+            if(data.length > 0) {
+                let child = $('#mata_pelajaran');
+                $.each(data, function (k, v) {
+
+                    child.append('<option value="'+v['mata_pelajaran_id']+'">'+v['mata_pelajaran']['nama']+'</option>')
+                });
+            }
+            $('.select2').select2({
+                width: 'resolve'
+            });
+        }
+        async function getSubjectBy()
+        {
+            try {
+                let periode = $('#periode').val();
+                let kelas = $('#kelas').val();
+                let semester = $('#semester').val();
+                let response = await $.get('/jadwal/listBy?periode=' + periode + '&kelas=' + kelas + '&semester=' + semester);
+                if(response['status'] === 200) {
+                    let data = response['payload']['data'];
+                    elCombo(data);
+                }
+                console.log(response)
+            } catch (e) {
+                console.log(e)
+            }
+        }
+
         $(document).ready(function () {
             $('.select2').select2({
                 width: 'resolve'
@@ -374,8 +407,22 @@
             });
 
             $('.btn-save-subject').on('click', function () {
-                addJadwal()
+                addJadwal();
+            });
 
+            $('#periode').on('change', function () {
+                getJadwal();
+            });
+
+            $('#kelas').on('change', function () {
+                getJadwal();
+            });
+
+            $('#semester').on('change', function () {
+                getJadwal();
+            });
+            $('#modal-schedule').on('show.bs.modal', function () {
+                getSubjectBy();
             });
         });
     </script>

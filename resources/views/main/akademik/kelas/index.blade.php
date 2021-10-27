@@ -13,7 +13,9 @@
     ];
 @endphp
 @section('css')
-    <link rel="stylesheet" href="{{ asset('/adminlte/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+{{--    <link rel="stylesheet" href="{{ asset('/adminlte/plugins/datatables/dataTables.bootstrap4.min.css') }}">--}}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
+
 @endsection
 @section('content-title')
     <div class="d-flex justify-content-between align-items-center">
@@ -57,12 +59,17 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('/adminlte/plugins/datatables/jquery.dataTables.js') }}"></script>
-    <script src="{{ asset('/adminlte/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+{{--    <script src="{{ asset('/adminlte/plugins/datatables/jquery.dataTables.js') }}"></script>--}}
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
+{{--    <script src="{{ asset('/adminlte/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>--}}
+
     <script src="{{ asset('/helper/helper.js') }}"></script>
     <script>
         $(document).ready(function () {
-            $('#my-table').DataTable();
+            $('#my-table').DataTable({
+                paging: true,
+            });
 
             $('.btn-delete').on('click', function () {
                 let id = this.dataset.id;

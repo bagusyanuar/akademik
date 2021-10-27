@@ -8,6 +8,7 @@ use App\Helper\CustomController;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
+use App\Models\PelajaranKelas;
 use App\Models\Periode;
 
 class JadwalController extends CustomController
@@ -26,6 +27,26 @@ class JadwalController extends CustomController
             'periode' => $periode,
             'kelas' => $kelas,
             'mata_pelajaran' => $mata_pelajaran]);
+    }
+
+    public function getSubjectBy()
+    {
+        try {
+            $periode = $this->field('periode');
+            $kelas = $this->field('kelas');
+            $semester = $this->field('semester');
+            $data = PelajaranKelas::with(['mataPelajaran'])
+                ->where([
+                    ['periode_id', '=', $periode],
+                    ['semester', '=', $semester],
+                    ['kelas_id', '=', $kelas],
+                ])->get();
+            return $this->jsonResponse('success', 200, [
+                'data' => $data
+            ]);
+        }catch (\Exception $e) {
+            return $this->jsonResponse($e->getMessage(), 500);
+        }
     }
 
     public function store()
