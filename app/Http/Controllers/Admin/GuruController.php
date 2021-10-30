@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helper\CustomController;
 use App\Models\Admin;
 use App\Models\Guru;
+use App\Models\Kelas;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -20,8 +21,9 @@ class GuruController extends CustomController
 
     public function index()
     {
-        $data = Guru::with('user')->get();
-        return view('main.pengguna.guru.index')->with(['data' => $data]);
+        $data = Guru::with(['user', 'kelas'])->get();
+        $kelas = Kelas::orderBy('nama', 'ASC')->get();
+        return view('main.pengguna.guru.index')->with(['data' => $data, 'kelas' => $kelas]);
     }
 
     public function addPage()

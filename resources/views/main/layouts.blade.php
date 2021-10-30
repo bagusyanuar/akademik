@@ -46,8 +46,9 @@
                 <x-sidebar.item title="Pelajaran Kelas" link="/pelajaran-kelas" />
                 <x-sidebar.item title="Jadwal Pelajaran" link="/jadwal" />
             </x-sidebar.tree-menu>
-            <x-sidebar.header-menu title="Transaction"/>
-            <x-sidebar.item title="Menu Item 1" link="/" />
+            <x-sidebar.header-menu title="Penilaian"/>
+            <x-sidebar.item title="Penilaian" link="/penilaian" />
+            <x-sidebar.item title="Absen" link="/absen" />
         </x-sidebar.menu>
     </x-slot>
 </x-sidebar>
@@ -57,6 +58,7 @@
 </div>
 </body>
 <script src="{{ asset('/jQuery/jquery-3.4.1.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.js') }}"></script>
 <script src="{{ asset ('/adminlte/js/adminlte.js') }}"></script>
 <script src="{{ asset('/adminlte/plugins/select2/select2.js') }}"></script>
