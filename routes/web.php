@@ -40,6 +40,8 @@ Route::group(['prefix' => 'guru'], function (){
     Route::post('/store', [\App\Http\Controllers\Admin\GuruController::class, 'store']);
     Route::post('/patch', [\App\Http\Controllers\Admin\GuruController::class, 'patch']);
     Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\GuruController::class, 'destroy']);
+    Route::post('/kelas', [\App\Http\Controllers\Admin\GuruController::class, 'setKelas']);
+    Route::post('/kelas/drop', [\App\Http\Controllers\Admin\GuruController::class, 'dropKelas']);
 });
 
 Route::group(['prefix' => 'orang-tua'], function (){

@@ -57,12 +57,16 @@
                                     </button>
                                 @else
                                     <div class="dropdown">
-                                        <button class="btn btn-info btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button class="btn btn-info btn-sm dropdown-toggle" type="button"
+                                                id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="false">
                                             {{ $guru->kelas->nama }}
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <button class="dropdown-item btn-wali" data-guru="{{$guru->id}}" data-wali="{{ $guru->kelas->id }}">Ganti</button>
-                                            <button class="dropdown-item" data-guru="{{$guru->id}}">Hapus</button>
+                                            <button class="dropdown-item btn-wali" data-guru="{{$guru->id}}"
+                                                    data-wali="{{ $guru->kelas->id }}">Ganti
+                                            </button>
+                                            <button class="dropdown-item btn-drop-wali" data-guru="{{$guru->id}}">Hapus</button>
                                         </div>
                                     </div>
                                 @endif
@@ -83,17 +87,20 @@
         </div>
     </div>
 
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Wali Kelas</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
+
                     <input type="hidden" id="type" name="type" value="add">
+                    <input type="hidden" id="guru" name="guru" value="">
                     <div class="form-group w-100">
                         <label for="kelas">Kelas</label>
                         <x-form.select2 id="kelas" name="kelas">
@@ -105,7 +112,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-primary" id="btn-kelas">Simpan</button>
                 </div>
             </div>
         </div>
@@ -129,16 +136,18 @@
                 let data_guru = this.dataset.guru;
                 let data_wali = this.dataset.wali;
                 let type = 'add';
-                if(data_wali !== undefined) {
+                if (data_wali !== undefined) {
                     type = 'edit';
                     $('#kelas').select2("val", data_wali);
-                }else {
+                } else {
                     $('#kelas').select2("val", '');
                 }
+                $('#guru').val(data_guru);
                 console.log(data_guru, data_wali);
-                $('#type').val(type)
+                $('#type').val(type);
                 $('#myModal').modal('show')
-            })
+            });
+
             $('.btn-delete').on('click', function () {
                 let id = this.dataset.id;
                 confirmSweetAlert('Konfirmasi', 'Apakah Anda Yakin Menghapus Data?', async function () {
@@ -156,7 +165,36 @@
                         console.log(e)
                     }
                 })
-            })
+            });
+
+            $('#btn-kelas').on('click', async function () {
+                let data = {
+                    '_token': '{{ csrf_token() }}',
+                    kelas: $('#kelas').val(),
+                    id: $('#guru').val()
+                };
+                let response = await $.post('/guru/kelas/', data);
+                if (response['code'] === 200) {
+                    window.location.href = '/guru';
+                } else if (response['code'] === 202) {
+                    sweetAlertMessage('Peringatan!', response['msg'], 'warning')
+                } else {
+                    sweetAlertMessage('Peringatan!', response['msg'], 'warning')
+                }
+            });
+
+            $('.btn-drop-wali').on('click', async function () {
+                let data = {
+                    '_token': '{{ csrf_token() }}',
+                    id: this.dataset.guru
+                };
+                let response = await $.post('/guru/kelas/drop', data);
+                if (response['code'] === 200) {
+                    window.location.href = '/guru';
+                } else {
+                    sweetAlertMessage('Peringatan!', response['msg'], 'warning')
+                }
+            });
         });
     </script>
 @endsection

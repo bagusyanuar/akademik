@@ -116,4 +116,52 @@ class GuruController extends CustomController
             ]);
         }
     }
+
+    public function setKelas()
+    {
+        try {
+            $id = $this->postField('id');
+            $kelas = $this->postField('kelas');
+
+            $isExist = Guru::where('kelas_id', $kelas)->first();
+            if($isExist) {
+                return response()->json([
+                    'msg' => 'Kelas Sudah Di Ampu Oleh Guru Yang Lain...',
+                    'code' => 202
+                ]);
+            }
+
+            $guru = Guru::find($id);
+            $guru->kelas_id = $kelas;
+            $guru->save();
+            return response()->json([
+                'msg' => 'success',
+                'code' => 200
+            ]);
+        }catch (\Exception $e) {
+            return response()->json([
+                'msg' => 'Terjadi Kesalahan' . $e,
+                'code' => 500
+            ]);
+        }
+    }
+
+    public function dropKelas()
+    {
+        try {
+            $id = $this->postField('id');
+            $guru = Guru::find($id);
+            $guru->kelas_id = null;
+            $guru->save();
+            return response()->json([
+                'msg' => 'success',
+                'code' => 200
+            ]);
+        }catch (\Exception $e) {
+            return response()->json([
+                'msg' => 'Terjadi Kesalahan' . $e,
+                'code' => 500
+            ]);
+        }
+    }
 }
