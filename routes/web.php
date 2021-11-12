@@ -102,4 +102,11 @@ Route::group(['prefix' => 'pelajaran-kelas'], function (){
     Route::post('/destroy', [\App\Http\Controllers\Admin\PelajaranKelasController::class, 'destroy']);
 });
 
+Route::group(['prefix' => 'penilaian'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\PenilaianController::class, 'index']);
+    Route::get('/list', [\App\Http\Controllers\Admin\PenilaianController::class, 'getList']);
+    Route::post('/store', [\App\Http\Controllers\Admin\PenilaianController::class, 'store']);
+    Route::post('/destroy', [\App\Http\Controllers\Admin\PenilaianController::class, 'destroy']);
+});
+
 

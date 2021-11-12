@@ -24,4 +24,9 @@ class PelajaranKelas extends Model
     {
         return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id');
     }
+
+    public function nilai()
+    {
+        return $this->hasOne(Nilai::class, 'pelajaran_kelas_id')->select(['pelajaran_kelas_id', 'nilai'])->orderBy('nilai', 'DESC');
+    }
 }
