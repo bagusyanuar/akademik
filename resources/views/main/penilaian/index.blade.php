@@ -76,9 +76,15 @@
                         <tbody>
                         @foreach($pelajaran as $v)
                             <tr>
-                                <td>1</td>
+                                <td>{{ $loop->index + 1 }}</td>
                                 <td>{{ $v->mataPelajaran->nama }}</td>
-                                <td>1</td>
+                                <td>
+                                    @if($v->nilai == null)
+                                        0
+                                    @else
+                                        {{ $v->nilai->nilai }}
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>

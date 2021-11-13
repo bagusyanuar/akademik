@@ -21,6 +21,9 @@ class PenilaianController extends CustomController
 
     public function index()
     {
+        $idSiswa = $this->field('siswa');
+        $Idperiode = $this->field('periode');
+        $semester = $this->field('semester');
         $periode = Periode::all();
         $authGuru = Guru::with('user')->where('user_id', 8)->whereNotNull('kelas_id')->first();
         if (!$authGuru) {
@@ -28,11 +31,14 @@ class PenilaianController extends CustomController
         }
 
         $siswa = Siswa::where('kelas_id', $authGuru->kelas_id)->get();
-        $subQuery =
-        $pelajaran = PelajaranKelas::with(['mataPelajaran', 'nilai'])
-            ->where('periode_id', 1)
+        $id = 3;
+//        $subQuery =
+        $pelajaran = PelajaranKelas::with(['mataPelajaran', 'nilai' => function ($query) use ($idSiswa) {
+            $query->where('siswa_id', $idSiswa);
+        }])
+            ->where('periode_id', $Idperiode)
             ->where('kelas_id', $authGuru->kelas_id)
-            ->where('semester', 1)
+            ->where('semester', $semester)
             ->get();
 
         return $pelajaran->toArray();
