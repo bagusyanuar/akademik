@@ -57,7 +57,7 @@
 
                 <div class="form-group w-100">
                     <label for="semester">Nama Siswa</label>
-                    <x-form.select2 id="semester" name="semester">
+                    <x-form.select2 id="siswa" name="siswa">
                         @foreach($siswa as $value)
                             <option value="{{ $value->id }}">{{ $value->nama }}</option>
                         @endforeach
@@ -71,22 +71,10 @@
                             <th scope="col">#</th>
                             <th scope="col">Mata Pelajaran</th>
                             <th scope="col">Nilai</th>
+                            <th scope="col">Aksi</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        @foreach($pelajaran as $v)
-                            <tr>
-                                <td>{{ $loop->index + 1 }}</td>
-                                <td>{{ $v->mataPelajaran->nama }}</td>
-                                <td>
-                                    @if($v->nilai == null)
-                                        0
-                                    @else
-                                        {{ $v->nilai->nilai }}
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
+                        <tbody id="panel_nilai">
                         </tbody>
                     </table>
                 </div>
@@ -94,36 +82,25 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modal-schedule" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="modal-nilai" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Jadwal Hari <span id="title-hari"
-                                                                                            class="title-hari"></span>
+                    <h5 class="modal-title" id="exampleModalLabel">Nilai Pelajaran<span id="title-hari"
+                                                                                        class="title-hari"></span>
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="hari" value="">
-                    <div class="form-group w-100" id="panel-mapel">
-                        <label for="mata_pelajaran">Mata Pelajaran</label>
-                        <x-form.select2 id="mata_pelajaran" name="mata_pelajaran">
-                        </x-form.select2>
-                    </div>
+                    <input type="hidden" id="idPelajaran" value="">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-12">
                             <div class="form-group w-100">
-                                <label for="mulai">Jam Mulai</label>
-                                <input type="time" id="mulai" name="mulai" class="form-control" value="07:00">
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-group w-100">
-                                <label for="selesai">Jam Selesai</label>
-                                <input type="time" id="selesai" name="selesai" class="form-control" value="07:00">
+                                <label for="nilai">Nilai</label>
+                                <input type="number" id="nilai" name="nilai" class="form-control" value="0">
                             </div>
                         </div>
                     </div>
@@ -131,7 +108,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary btn-save-subject">Tambah</button>
+                    <button type="button" class="btn btn-primary btn-save">Simpan</button>
                 </div>
             </div>
         </div>
@@ -141,183 +118,65 @@
 @section('js')
     <script src="{{ asset('/helper/helper.js') }}"></script>
     <script>
-        function elTable(list) {
-            return '<table class="table">' +
-                '<thead>' +
-                '<tr>' +
-                '<th scope="col">#</th>' +
-                '<th scope="col">Mata Pelajaran</th>' +
-                '<th scope="col">Waktu</th>' +
-                '<th scope="col">Aksi</th>' +
-                '</tr>' +
-                '</thead>' +
-                '<tbody>' + list +
-                '</tbody>' +
-                '</table>';
+        async function getNilai() {
+            let el = $('#panel_nilai');
+            el.empty();
+            try {
+                let siswa = $('#siswa').val();
+                let periode = 1;
+                let semester = 1;
+                let response = await $.get('/penilaian/getNilai?siswa=' + siswa + '&periode=' + periode + '&semester=' + semester);
+                console.log(response);
+                let payload = response['payload'];
+                $.each(payload, function (k, v) {
+                    el.append(elNilai(v, k));
+                });
+                $('.btn-save-nilai').on('click', function () {
+                    let id = this.dataset.id;
+                    let nilai = this.dataset.nilai;
+                    $('#idPelajaran').val(id);
+                    $('#nilai').val(nilai);
+                    $('#modal-nilai').modal('show');
+                    console.log(id, nilai);
+                })
+            } catch (e) {
+                console.log(e)
+            }
         }
 
-        function singleList(index, value, hari) {
-            let {mulai, selesai, id} = value;
+        function elNilai(v, k) {
+            let mapel = v['mata_pelajaran']['nama'];
+            let nilai = 0;
+            if (v['nilai'] !== null) {
+                nilai = v['nilai']['nilai'];
+            }
             return '<tr>' +
-                '<th scope="row">' + index + '</th>' +
-                '<td>' + value['mata_pelajaran']['nama'] + '</td>' +
-                '<td>' + mulai.substr(0, 5) + ' - ' + selesai.substr(0, 5) + '</td>' +
-                '<td><button type="button" class="btn btn-sm btn-danger btn-delete-jadwal" data-id="' + id + '" data-day="' + hari + '"><i class="fa fa-trash"></i></button></td>' +
+                '<td>' + (k + 1) + '</td>' +
+                '<td>' + mapel + '</td>' +
+                '<td>' + nilai + '</td>' +
+                '<td><button class="btn btn-primary btn-sm btn-save-nilai" data-id="' + v['id'] + '" data-nilai="' + nilai + '"><i class="fa fa-edit"></i></button></td>' +
                 '</tr>';
         }
 
-        function elEmpty() {
-            return '<div class="d-block text-center">' +
-                '<span class="font-weight-bold text-center d-block mb-1">Jadwal Belum Tersedia</span>' +
-                '</div>';
-        }
-
-        function deleteJadwal(formData) {
-            confirmSweetAlert('Konfirmasi', 'Apakah Anda Yakin Menghapus Data?', async function () {
-                try {
-                    let data = {
-                        '_token': '{{ csrf_token() }}',
-                        hari: formData['hari'],
-                        periode: formData['periode'],
-                        kelas: formData['kelas'],
-                        semester: formData['semester'],
-                        id: formData['id'],
-                    };
-                    let response = await $.post('/jadwal/destroy/', data);
-                    console.log(response)
-                    if (response['status'] === 200) {
-                        reloadJadwal(response, formData['hari']);
-                    } else {
-                        sweetAlertMessage('Peringatan!', response['msg'], 'warning')
-                    }
-                } catch (e) {
-                    console.log(e)
-                }
-            });
-        }
-
-        async function getJadwal() {
+        async function saveNilai() {
             try {
-                let periode = $('#periode').val();
-                let kelas = $('#kelas').val();
-                let semester = $('#semester').val();
-                let availableDay = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
-                let response = await $.get('/jadwal/list?periode=' + periode + '&kelas=' + kelas + '&semester=' + semester);
-                let data = response['payload']['data'];
-                $.each(availableDay, function (k, v) {
-                    let jadwal = data[v];
-                    let element = $('#panel-' + v);
-                    element.empty();
-                    if (jadwal !== undefined) {
-                        let list = '';
-                        $.each(jadwal, function (key_jadwal, data) {
-                            list += singleList((key_jadwal + 1), data, v);
-                        });
-                        element.append(elTable(list));
-                        $('.btn-delete-jadwal').on('click', function () {
-                            let id = this.dataset.id;
-                            let day = this.dataset.day;
-                            let data = {
-                                id: id,
-                                periode: $('#periode').val(),
-                                hari: day,
-                                kelas: $('#kelas').val(),
-                                semester: $('#semester').val(),
-                            };
-                            deleteJadwal(data);
-                        })
-                    } else {
-                        element.append(elEmpty());
-                    }
-                    console.log(jadwal)
+                let siswa = $('#siswa').val();
+                let pelajaran = $('#idPelajaran').val();
+                let nilai = $('#nilai').val();
+                let response = await $.post('/penilaian/saveNilai', {
+                    '_token': '{{ csrf_token() }}',
+                    siswa, pelajaran, nilai
                 });
-                console.log(response)
-            } catch (e) {
-                console.log(e)
-            }
-        }
+                if(response['status'] === 200) {
+                    $('#modal-nilai').modal('hide');
+                    getNilai()
 
-        async function addJadwal() {
-            try {
-                let data = {
-                    _token: '{{csrf_token()}}',
-                    periode: $('#periode').val(),
-                    hari: $('#hari').val(),
-                    kelas: $('#kelas').val(),
-                    mata_pelajaran: $('#mata_pelajaran').val(),
-                    mulai: $('#mulai').val(),
-                    selesai: $('#selesai').val(),
-                    semester: $('#semester').val(),
-                };
-                let response = await $.post('/jadwal/store', data);
-                if (response['status'] === 200) {
-                    reloadJadwal(response, $('#hari').val());
-                }
-                $('#modal-schedule').modal('hide');
-                console.log(response)
-            } catch (e) {
-                sweetAlertMessage('Gagal', 'Gagal Menambahan Jadwal!', 'error');
-            }
-        }
-
-        function reloadJadwal(response, hari) {
-            let element = $('#panel-' + hari);
-            element.empty();
-            let list = '';
-            if (response['payload']['data'].length > 0) {
-                $.each(response['payload']['data'], function (k, v) {
-                    list += singleList((k + 1), v, hari);
-                });
-                element.append(elTable(list));
-                $('.btn-delete-jadwal').on('click', function () {
-                    let id = this.dataset.id;
-                    let day = this.dataset.day;
-                    let data = {
-                        id: id,
-                        periode: $('#periode').val(),
-                        hari: day,
-                        kelas: $('#kelas').val(),
-                        semester: $('#semester').val(),
-                    };
-                    deleteJadwal(data);
-                })
-            } else {
-                element.append(elEmpty());
-            }
-        }
-
-        function elCombo(data) {
-            console.log(data)
-            let element = $('#panel-mapel');
-            element.empty();
-            let parent = '<label for="mata_pelajaran">Mata Pelajaran</label>' +
-                '<select class="select2" name="mata_pelajaran" id="mata_pelajaran" style="width: 100%;"></select>';
-            element.append(parent);
-            if (data.length > 0) {
-                let child = $('#mata_pelajaran');
-                $.each(data, function (k, v) {
-
-                    child.append('<option value="' + v['mata_pelajaran_id'] + '">' + v['mata_pelajaran']['nama'] + '</option>')
-                });
-            }
-            $('.select2').select2({
-                width: 'resolve'
-            });
-        }
-
-        async function getSubjectBy() {
-            try {
-                let periode = $('#periode').val();
-                let kelas = $('#kelas').val();
-                let semester = $('#semester').val();
-                let response = await $.get('/jadwal/listBy?periode=' + periode + '&kelas=' + kelas + '&semester=' + semester);
-                if (response['status'] === 200) {
-                    let data = response['payload']['data'];
-                    elCombo(data);
+                }else {
+                    sweetAlertMessage('Peringatan!', response['msg'], 'warning')
                 }
                 console.log(response)
             } catch (e) {
-                console.log(e)
+                sweetAlertMessage('Peringatan!', 'Error', 'error')
             }
         }
 
@@ -326,33 +185,16 @@
                 width: 'resolve'
             });
 
-            getJadwal();
+            $('#siswa').on('change', function () {
+                getNilai();
+            });
+            getNilai();
 
-            $('.btn-add-subject').on('click', function () {
-                let day = this.dataset.day;
-                $('#title-hari').html(day);
-                $('#hari').val(day);
-                $('#modal-schedule').modal('show');
-            });
-
-            $('.btn-save-subject').on('click', function () {
-                addJadwal();
-            });
-
-            $('#periode').on('change', function () {
-                getJadwal();
-            });
-
-            $('#kelas').on('change', function () {
-                getJadwal();
-            });
-
-            $('#semester').on('change', function () {
-                getJadwal();
-            });
-            $('#modal-schedule').on('show.bs.modal', function () {
-                getSubjectBy();
-            });
+            $('.btn-save').on('click', async function () {
+                confirmSweetAlert('Konfirmasi','Yakin Ingin Merubah Nilai?', function () {
+                    saveNilai();
+                })
+            })
         });
     </script>
 @endsection
