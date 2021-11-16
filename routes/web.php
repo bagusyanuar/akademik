@@ -104,6 +104,7 @@ Route::group(['prefix' => 'pelajaran-kelas'], function (){
 
 Route::group(['prefix' => 'penilaian'], function (){
     Route::get('/', [\App\Http\Controllers\Admin\PenilaianController::class, 'index']);
+    Route::get('/check', [\App\Http\Controllers\Admin\PenilaianController::class, 'justCheck']);
     Route::get('/getNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'getNilai']);
     Route::post('/saveNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'saveNilai']);
     Route::get('/list', [\App\Http\Controllers\Admin\PenilaianController::class, 'getList']);

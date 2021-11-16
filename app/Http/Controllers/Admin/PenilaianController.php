@@ -25,7 +25,7 @@ class PenilaianController extends CustomController
 //        $idSiswa = $this->field('siswa');
 //        $Idperiode = $this->field('periode');
 //        $semester = $this->field('semester');
-        $periode = Periode::all();
+        $periode = Periode::orderBy('nama', 'DESC')->get();
         $authGuru = Guru::with('user')->where('user_id', 8)->whereNotNull('kelas_id')->first();
         if (!$authGuru) {
             return view('main.dashboard');
@@ -91,6 +91,18 @@ class PenilaianController extends CustomController
             }
             return $this->jsonResponse('success',  200);
 
+        }catch (\Exception $e) {
+            return $this->jsonResponse($e->getMessage(), 500);
+        }
+    }
+
+    public function justCheck()
+    {
+        try {
+            $siswa = Siswa::with(['kelas.pelajaran'])
+                ->get();
+
+            return $this->jsonResponse('success',  200, $siswa);
         }catch (\Exception $e) {
             return $this->jsonResponse($e->getMessage(), 500);
         }

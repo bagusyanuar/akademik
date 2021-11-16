@@ -45,12 +45,22 @@
                     <div class="d-flex">
                         <div class="d-flex align-items-center">
                             <span class="font-weight-bold mr-2">Periode : </span>
-                            <a href="#" class="title-header-action font-weight-bold text-black-50">2021/2022</a>
+                            <a href="#" data-toggle="modal" data-target="#modal-periode"
+                               class="title-header-action font-weight-bold text-black-50" id="label_periode"
+                               data-periode="{{ $periode[0]->id }}">{{ $periode[0]->nama }}</a>
                         </div>
                         <span class="font-weight-bold mr-2 ml-2">|</span>
                         <div class="d-flex align-items-center">
                             <span class="font-weight-bold mr-2">Semester : </span>
-                            <a href="#" class="title-header-action font-weight-bold text-black-50">Semester 1</a>
+                            <div class="dropdown">
+                                <a href="#" class="title-header-action font-weight-bold text-black-50" data-toggle="dropdown" aria-expanded="false"
+                                   id="label_semester" data-semester="1">Semester 1</a>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item btn-semester" href="#" data-semester="1">Semester 1</a>
+                                    <a class="dropdown-item btn-semester" href="#" data-semester="2">Semester 2</a>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </x-slot>
@@ -113,6 +123,40 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modal-periode" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Periode Pembelajaran
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group w-100">
+                                <label for="periode">Periode</label>
+                                <select class="form-control" id="periode">
+                                    @foreach($periode as $v)
+                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary btn-change-periode">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('js')
@@ -123,8 +167,8 @@
             el.empty();
             try {
                 let siswa = $('#siswa').val();
-                let periode = 1;
-                let semester = 1;
+                let periode = $('#label_periode').data('periode');
+                let semester = $('#label_semester').data('semester');
                 let response = await $.get('/penilaian/getNilai?siswa=' + siswa + '&periode=' + periode + '&semester=' + semester);
                 console.log(response);
                 let payload = response['payload'];
@@ -167,11 +211,11 @@
                     '_token': '{{ csrf_token() }}',
                     siswa, pelajaran, nilai
                 });
-                if(response['status'] === 200) {
+                if (response['status'] === 200) {
                     $('#modal-nilai').modal('hide');
                     getNilai()
 
-                }else {
+                } else {
                     sweetAlertMessage('Peringatan!', response['msg'], 'warning')
                 }
                 console.log(response)
@@ -191,9 +235,27 @@
             getNilai();
 
             $('.btn-save').on('click', async function () {
-                confirmSweetAlert('Konfirmasi','Yakin Ingin Merubah Nilai?', function () {
+                confirmSweetAlert('Konfirmasi', 'Yakin Ingin Merubah Nilai?', function () {
                     saveNilai();
                 })
+            });
+
+            $('.btn-change-periode').on('click', function () {
+               let periode = $('#periode').val();
+               let periodeText = $('#periode option:selected').text();
+               $('#label_periode').data('periode', periode);
+               $('#label_periode').html(periodeText);
+               getNilai();
+               $('#modal-periode').modal('hide');
+            });
+
+            $('.btn-semester').on('click', function (e) {
+                e.preventDefault();
+                let semester = this.dataset.semester;
+                console.log(semester);
+                $('#label_semester').data('semester', semester);
+                $('#label_semester').html(this.innerHTML);
+                getNilai();
             })
         });
     </script>

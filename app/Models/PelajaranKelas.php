@@ -29,4 +29,5 @@ class PelajaranKelas extends Model
     {
         return $this->hasOne(Nilai::class, 'pelajaran_kelas_id')->select(['pelajaran_kelas_id', 'nilai'])->orderBy('nilai', 'DESC');
     }
+
 }
