@@ -107,9 +107,14 @@ Route::group(['prefix' => 'penilaian'], function (){
     Route::get('/check', [\App\Http\Controllers\Admin\PenilaianController::class, 'justCheck']);
     Route::get('/getNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'getNilai']);
     Route::post('/saveNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'saveNilai']);
-    Route::get('/list', [\App\Http\Controllers\Admin\PenilaianController::class, 'getList']);
-    Route::post('/store', [\App\Http\Controllers\Admin\PenilaianController::class, 'store']);
-    Route::post('/destroy', [\App\Http\Controllers\Admin\PenilaianController::class, 'destroy']);
+});
+
+Route::group(['prefix' => 'absen'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\AbsensiController::class, 'index']);
+    Route::get('/list', [\App\Http\Controllers\Admin\AbsensiController::class, 'getList']);
+//    Route::get('/check', [\App\Http\Controllers\Admin\PenilaianController::class, 'justCheck']);
+//    Route::get('/getNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'getNilai']);
+//    Route::post('/saveNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'saveNilai']);
 });
 
 

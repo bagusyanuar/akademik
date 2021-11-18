@@ -8,7 +8,7 @@
         ],
         [
             'link' => '/',
-            'title' => 'Penilaian'
+            'title' => 'Absensi'
         ],
     ];
 @endphp
@@ -30,17 +30,18 @@
 
 
     </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
 @endsection
 @section('content-title')
     <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mb-0">Halaman Penilaian Kelas {{ $guru->kelas->nama }}</h4>
+        <h4 class="mb-0">Halaman Absensi Kelas {{ $guru->kelas->nama }}</h4>
         <x-breadcrumb :item="$breadcrumb_item"></x-breadcrumb>
     </div>
 @endsection
 @section('content')
     <div class="row justify-content-center">
         <div class="col-12">
-            <x-card title="Form Penilaian Kelas {{ $guru->kelas->nama }}" class="mt-3">
+            <x-card title="Form Absensi Kelas {{ $guru->kelas->nama }}" class="mt-3">
                 <x-slot name="header_action">
                     <div class="d-flex">
                         <div class="d-flex align-items-center">
@@ -53,7 +54,8 @@
                         <div class="d-flex align-items-center">
                             <span class="font-weight-bold mr-2">Semester : </span>
                             <div class="dropdown">
-                                <a href="#" class="title-header-action font-weight-bold text-black-50" data-toggle="dropdown" aria-expanded="false"
+                                <a href="#" class="title-header-action font-weight-bold text-black-50"
+                                   data-toggle="dropdown" aria-expanded="false"
                                    id="label_semester" data-semester="1">Semester 1</a>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     <a class="dropdown-item btn-semester" href="#" data-semester="1">Semester 1</a>
@@ -64,24 +66,16 @@
                         </div>
                     </div>
                 </x-slot>
-
-                <div class="form-group w-100">
-                    <label for="semester">Nama Siswa</label>
-                    <x-form.select2 id="siswa" name="siswa">
-                        @foreach($siswa as $value)
-                            <option value="{{ $value->id }}">{{ $value->nama }}</option>
-                        @endforeach
-                    </x-form.select2>
+                <div class="text-right w-100 mb-3">
+                    <a href="#" class="btn btn-primary btn-sm"><i class="fa fa-plus mr-2"></i><span>Buat Absensi</span></a>
                 </div>
-                <hr/>
                 <div>
-                    <table class="table">
-                        <thead>
+                    <table id="my-table" class="table display w-100">
+                        <thead class="w-100">
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Mata Pelajaran</th>
-                            <th scope="col">Nilai</th>
-                            <th scope="col">Aksi</th>
+                            <th width="10%" class="text-center">#</th>
+                            <th width="70%">Tanggal</th>
+                            <th width="20%" class="text-center">Action</th>
                         </tr>
                         </thead>
                         <tbody id="panel_nilai">
@@ -160,8 +154,14 @@
 @endsection
 
 @section('js')
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
     <script src="{{ asset('/helper/helper.js') }}"></script>
     <script>
+        let table;
+
         async function getNilai() {
             let el = $('#panel_nilai');
             el.empty();
@@ -225,6 +225,36 @@
         }
 
         $(document).ready(function () {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            table = $('#my-table').DataTable({
+                "scrollX": true,
+                processing: true,
+                ajax: {
+                    type: 'GET',
+                    url: '/absen/list?periode=1&kelas=6&semester=1',
+                },
+                columnDefs: [
+                    {
+                        targets: 2,
+                        className: 'dt-body-center'
+                    }
+                ],
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false},
+                    {data: 'tanggal'},
+                    {
+                        data: null, render: function (data, type, row, meta) {
+                            return '<a href="#" class="btn btn-primary btn-sm text-center">detail</a>';
+                        }
+                    },
+                ],
+                paging: true,
+            });
+
             $('.select2').select2({
                 width: 'resolve'
             });
@@ -232,7 +262,6 @@
             $('#siswa').on('change', function () {
                 getNilai();
             });
-            getNilai();
 
             $('.btn-save').on('click', async function () {
                 confirmSweetAlert('Konfirmasi', 'Yakin Ingin Merubah Nilai?', function () {
@@ -241,12 +270,12 @@
             });
 
             $('.btn-change-periode').on('click', function () {
-               let periode = $('#periode').val();
-               let periodeText = $('#periode option:selected').text();
-               $('#label_periode').data('periode', periode);
-               $('#label_periode').html(periodeText);
-               getNilai();
-               $('#modal-periode').modal('hide');
+                let periode = $('#periode').val();
+                let periodeText = $('#periode option:selected').text();
+                $('#label_periode').data('periode', periode);
+                $('#label_periode').html(periodeText);
+                getNilai();
+                $('#modal-periode').modal('hide');
             });
 
             $('.btn-semester').on('click', function (e) {
