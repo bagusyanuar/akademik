@@ -67,7 +67,7 @@
                     </div>
                 </x-slot>
                 <div class="text-right w-100 mb-3">
-                    <a href="#" class="btn btn-primary btn-sm"><i class="fa fa-plus mr-2"></i><span>Buat Absensi</span></a>
+                    <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-absen"><i class="fa fa-plus mr-2"></i><span>Buat Absensi</span></a>
                 </div>
                 <div>
                     <table id="my-table" class="table display w-100">
@@ -86,12 +86,12 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modal-nilai" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="modal-absen" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Nilai Pelajaran<span id="title-hari"
+                    <h5 class="modal-title" id="exampleModalLabel">Data Absen<span id="title-hari"
                                                                                         class="title-hari"></span>
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -99,12 +99,12 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="idPelajaran" value="">
+                    <input type="hidden" id="kelas" value="{{ $guru->kelas->id }}">
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group w-100">
-                                <label for="nilai">Nilai</label>
-                                <input type="number" id="nilai" name="nilai" class="form-control" value="0">
+                                <label for="tanggal">Tanggal</label>
+                                <input type="date" id="tanggal" name="tanggal" class="form-control" value="{{ date('Y-m-d') }}">
                             </div>
                         </div>
                     </div>
@@ -112,7 +112,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary btn-save">Simpan</button>
+                    <button type="button" class="btn btn-primary btn-save-absen">Simpan</button>
                 </div>
             </div>
         </div>
@@ -202,21 +202,22 @@
                 '</tr>';
         }
 
-        async function saveNilai() {
+        async function createAbsen() {
             try {
-                let siswa = $('#siswa').val();
-                let pelajaran = $('#idPelajaran').val();
-                let nilai = $('#nilai').val();
-                let response = await $.post('/penilaian/saveNilai', {
+                let tanggal = $('#tanggal').val();
+                let kelas = $('#kelas').val();
+                let periode = $('#label_periode').data('periode');
+                let semester = $('#label_semester').data('semester');
+                let response = await $.post('/absen/create', {
                     '_token': '{{ csrf_token() }}',
-                    siswa, pelajaran, nilai
+                    tanggal, kelas, periode, semester
                 });
+                console.log(response);
                 if (response['status'] === 200) {
-                    $('#modal-nilai').modal('hide');
-                    getNilai()
+                    $('#modal-absen').modal('hide');
 
                 } else {
-                    sweetAlertMessage('Peringatan!', response['msg'], 'warning')
+                    sweetAlertMessage('Peringatan!', response['message'], 'warning')
                 }
                 console.log(response)
             } catch (e) {
@@ -263,9 +264,9 @@
                 getNilai();
             });
 
-            $('.btn-save').on('click', async function () {
+            $('.btn-save-absen').on('click', async function () {
                 confirmSweetAlert('Konfirmasi', 'Yakin Ingin Merubah Nilai?', function () {
-                    saveNilai();
+                    createAbsen();
                 })
             });
 

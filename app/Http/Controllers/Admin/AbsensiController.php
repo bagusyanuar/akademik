@@ -43,9 +43,40 @@ class AbsensiController extends CustomController
                 ->where('periode_id', $periode)
                 ->where('kelas_id', $kelas)
                 ->where('semester', $semester)
+                ->orderBy('tanggal', 'DESC')
                 ->get();
             return $this->basicDataTables($data);
         } catch (\Exception $e) {
+            return $this->jsonResponse($e->getMessage(), 500);
+        }
+    }
+
+    public function createAbsen()
+    {
+        try {
+            $periode = $this->postField('periode');
+            $kelas = $this->postField('kelas');
+            $semester = $this->postField('semester');
+            $tanggal = $this->postField('tanggal');
+
+            $isExist  =  Absen::where('periode_id', $periode)
+                ->where('kelas_id', $kelas)
+                ->where('semester', $semester)
+                ->where('tanggal', $tanggal)
+                ->first();
+
+            if($isExist) {
+                return $this->jsonResponse('Absensi Sudah DI Buat!', 202);
+            }
+
+            $absen = new Absen();
+            $absen->periode_id = $periode;
+            $absen->kelas_id = $kelas;
+            $absen->semester = $semester;
+            $absen->tanggal = $tanggal;
+            $absen->save();
+            return $this->jsonResponse('success', 200, $absen->id);
+        }catch (\Exception $e) {
             return $this->jsonResponse($e->getMessage(), 500);
         }
     }
