@@ -34,40 +34,32 @@
 @endsection
 @section('content-title')
     <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mb-0">Halaman Absensi Kelas {{ $guru->kelas->nama }}</h4>
+        <h4 class="mb-0">Halaman Absensi Kelas {{ $absen->kelas->nama }} Tanggal {{ $absen->tanggal }}</h4>
         <x-breadcrumb :item="$breadcrumb_item"></x-breadcrumb>
     </div>
 @endsection
 @section('content')
     <div class="row justify-content-center">
         <div class="col-12">
-            <x-card title="Form Absensi Kelas {{ $guru->kelas->nama }}" class="mt-3">
+            <x-card title="Daftar Absensi Kelas {{ $absen->kelas->nama }} Tanggal {{ $absen->tanggal }}" class="mt-3">
                 <x-slot name="header_action">
                     <div class="d-flex">
                         <div class="d-flex align-items-center">
                             <span class="font-weight-bold mr-2">Periode : </span>
-                            <a href="#" data-toggle="modal" data-target="#modal-periode"
-                               class="title-header-action font-weight-bold text-black-50" id="label_periode"
-                               data-periode="{{ $periode[0]->id }}">{{ $periode[0]->nama }}</a>
+                            <a
+                                class="title-header-action font-weight-bold text-black-50" id="label_periode"
+                            >{{ $absen->periode->nama }}</a>
                         </div>
                         <span class="font-weight-bold mr-2 ml-2">|</span>
                         <div class="d-flex align-items-center">
                             <span class="font-weight-bold mr-2">Semester : </span>
-                            <div class="dropdown">
-                                <a href="#" class="title-header-action font-weight-bold text-black-50"
-                                   data-toggle="dropdown" aria-expanded="false"
-                                   id="label_semester" data-semester="1">Semester 1</a>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                    <a class="dropdown-item btn-semester" href="#" data-semester="1">Semester 1</a>
-                                    <a class="dropdown-item btn-semester" href="#" data-semester="2">Semester 2</a>
-                                </div>
-                            </div>
-
+                            <a class="title-header-action font-weight-bold text-black-50"
+                               id="label_semester" data-semester="1">Semester{{ $absen->semester }}</a>
                         </div>
                     </div>
                 </x-slot>
                 <div class="text-right w-100 mb-3">
-                    <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-absen"><i
+                    <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-absen-siswa"><i
                             class="fa fa-plus mr-2"></i><span>Buat Absensi</span></a>
                 </div>
                 <div>
@@ -75,7 +67,9 @@
                         <thead class="w-100">
                         <tr>
                             <th width="10%" class="text-center">#</th>
-                            <th width="70%">Tanggal</th>
+                            <th width="30%">Nama Siswa</th>
+                            <th width="10%">Absen</th>
+                            <th width="30%">Keterangan</th>
                             <th width="20%" class="text-center">Action</th>
                         </tr>
                         </thead>
@@ -100,7 +94,6 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="kelas" value="{{ $guru->kelas->id }}">
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group w-100">
@@ -120,12 +113,12 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modal-periode" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="modal-absen-siswa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Periode Pembelajaran
+                    <h5 class="modal-title" id="exampleModalLabel">Absensi Siswa
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -135,20 +128,29 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group w-100">
-                                <label for="periode">Periode</label>
-                                <select class="form-control" id="periode">
-                                    @foreach($periode as $v)
-                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                <label for="semester">Nama Siswa</label>
+                                <x-form.select2 id="siswa" name="siswa">
+                                    @foreach($siswa as $value)
+                                        <option value="{{ $value->id }}">{{ $value->nama }}</option>
                                     @endforeach
+                                </x-form.select2>
+                            </div>
+                            <div class="form-group w-100">
+                                <label for="periode">Absen</label>
+                                <select class="form-control" id="absen">
+                                    <option value="masuk">Masuk</option>
+                                    <option value="ijin">Ijin</option>
+                                    <option value="alpha">Alpha</option>
                                 </select>
                             </div>
+                            <x-form.textarea id="keterangan" name="keterangan" label="Keterangan"></x-form.textarea>
                         </div>
                     </div>
 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary btn-change-periode">Simpan</button>
+                    <button type="button" class="btn btn-primary btn-save-absen">Simpan</button>
                 </div>
             </div>
         </div>
@@ -233,30 +235,30 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-            table = $('#my-table').DataTable({
-                "scrollX": true,
-                processing: true,
-                ajax: {
-                    type: 'GET',
-                    url: '/absen/list?periode=1&kelas=6&semester=1',
-                },
-                columnDefs: [
-                    {
-                        targets: 2,
-                        className: 'dt-body-center'
-                    }
-                ],
-                columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false},
-                    {data: 'tanggal'},
-                    {
-                        data: null, render: function (data, type, row, meta) {
-                            return '<a href="/absen/detail/' + data['id'] + '" class="btn btn-primary btn-sm text-center">detail</a>';
-                        }
-                    },
-                ],
-                paging: true,
-            });
+            // table = $('#my-table').DataTable({
+            //     "scrollX": true,
+            //     processing: true,
+            //     ajax: {
+            //         type: 'GET',
+            //         url: '/absen/list?periode=1&kelas=6&semester=1',
+            //     },
+            //     columnDefs: [
+            //         {
+            //             targets: 2,
+            //             className: 'dt-body-center'
+            //         }
+            //     ],
+            //     columns: [
+            //         {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false},
+            //         {data: 'tanggal'},
+            //         {
+            //             data: null, render: function (data, type, row, meta) {
+            //                 return '<a href="#" class="btn btn-primary btn-sm text-center">detail</a>';
+            //             }
+            //         },
+            //     ],
+            //     paging: true,
+            // });
 
             $('.select2').select2({
                 width: 'resolve'

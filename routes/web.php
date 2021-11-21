@@ -113,6 +113,7 @@ Route::group(['prefix' => 'absen'], function (){
     Route::get('/', [\App\Http\Controllers\Admin\AbsensiController::class, 'index']);
     Route::get('/list', [\App\Http\Controllers\Admin\AbsensiController::class, 'getList']);
     Route::post('/create', [\App\Http\Controllers\Admin\AbsensiController::class, 'createAbsen']);
+    Route::get('/detail/{id}', [\App\Http\Controllers\Admin\AbsensiController::class, 'absenDetail']);
 //    Route::get('/check', [\App\Http\Controllers\Admin\PenilaianController::class, 'justCheck']);
 //    Route::get('/getNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'getNilai']);
 //    Route::post('/saveNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'saveNilai']);

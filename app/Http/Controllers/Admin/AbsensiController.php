@@ -80,4 +80,19 @@ class AbsensiController extends CustomController
             return $this->jsonResponse($e->getMessage(), 500);
         }
     }
+
+    public function absenDetail($id)
+    {
+        $absen = Absen::with(['absen', 'kelas', 'periode'])->where('id', $id)->firstOrFail();
+        $authGuru = Guru::with(['user', 'kelas'])->where('user_id', 8)->whereNotNull('kelas_id')->first();
+        if (!$authGuru) {
+            return view('main.dashboard');
+        }
+
+        $siswa = Siswa::where('kelas_id', $authGuru->kelas_id)->get();
+        return view('main.absensi.detail')->with([
+            'absen' => $absen,
+            'siswa' => $siswa
+        ]);
+    }
 }
