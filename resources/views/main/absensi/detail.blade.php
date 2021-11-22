@@ -206,27 +206,31 @@
                 '</tr>';
         }
 
-        async function createAbsen() {
+        async function createAbsenSiswa() {
             try {
-                let tanggal = $('#tanggal').val();
-                let kelas = $('#kelas').val();
-                let periode = $('#label_periode').data('periode');
-                let semester = $('#label_semester').data('semester');
-                let response = await $.post('/absen/create', {
+                let id = '{{ $absen->id }}';
+                let siswa = $('#siswa').val();
+                let keterangan = $('#keterangan').val();
+                let absen = $('#absen').val();
+                let response = await $.post('/absen/create-absen', {
                     '_token': '{{ csrf_token() }}',
-                    tanggal, kelas, periode, semester
+                    id, siswa, keterangan, absen
                 });
-                console.log(response);
                 if (response['status'] === 200) {
-                    $('#modal-absen').modal('hide');
-
+                    $('#modal-absen-siswa').modal('hide');
+                    reload()
                 } else {
                     sweetAlertMessage('Peringatan!', response['message'], 'warning')
                 }
                 console.log(response)
             } catch (e) {
                 sweetAlertMessage('Peringatan!', 'Error', 'error')
+                console.log(e)
             }
+        }
+
+        function reload() {
+            table.ajax.reload();
         }
 
         $(document).ready(function () {
@@ -235,30 +239,33 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-            // table = $('#my-table').DataTable({
-            //     "scrollX": true,
-            //     processing: true,
-            //     ajax: {
-            //         type: 'GET',
-            //         url: '/absen/list?periode=1&kelas=6&semester=1',
-            //     },
-            //     columnDefs: [
-            //         {
-            //             targets: 2,
-            //             className: 'dt-body-center'
-            //         }
-            //     ],
-            //     columns: [
-            //         {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false},
-            //         {data: 'tanggal'},
-            //         {
-            //             data: null, render: function (data, type, row, meta) {
-            //                 return '<a href="#" class="btn btn-primary btn-sm text-center">detail</a>';
-            //             }
-            //         },
-            //     ],
-            //     paging: true,
-            // });
+            let id = '{{ $absen->id }}';
+            table = $('#my-table').DataTable({
+                "scrollX": true,
+                processing: true,
+                ajax: {
+                    type: 'GET',
+                    url: '/absen/list-absen?id=' + id,
+                },
+                columnDefs: [
+                    {
+                        targets: 4,
+                        className: 'dt-body-center'
+                    }
+                ],
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false},
+                    {data: 'siswa.nama'},
+                    {data: 'nilai'},
+                    {data: 'keterangan'},
+                    {
+                        data: null, render: function (data, type, row, meta) {
+                            return '<a href="#" class="btn btn-primary btn-sm text-center">detail</a>';
+                        }
+                    },
+                ],
+                paging: true,
+            });
 
             $('.select2').select2({
                 width: 'resolve'
@@ -269,8 +276,8 @@
             });
 
             $('.btn-save-absen').on('click', async function () {
-                confirmSweetAlert('Konfirmasi', 'Yakin Ingin Merubah Nilai?', function () {
-                    createAbsen();
+                confirmSweetAlert('Konfirmasi', 'Yakin Ingin Melakukan Absen', function () {
+                    createAbsenSiswa();
                 })
             });
 

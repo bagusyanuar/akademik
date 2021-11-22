@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Helper\CustomController;
 use App\Models\Absen;
+use App\Models\AbsenSiswa;
 use App\Models\Guru;
 use App\Models\Periode;
 use App\Models\Siswa;
@@ -94,5 +95,47 @@ class AbsensiController extends CustomController
             'absen' => $absen,
             'siswa' => $siswa
         ]);
+    }
+
+    public function createAbsenSiswa()
+    {
+        try {
+            $nilai = $this->postField('absen');
+            $absenId = $this->postField('id');
+            $siswa = $this->postField('siswa');
+            $keterangan = $this->postField('keterangan');
+
+            $isExist = AbsenSiswa::with(['absen', 'siswa'])
+                ->where('absen_id', $absenId)
+                ->where('siswa_id', $siswa)
+                ->first();
+            if($isExist) {
+                return $this->jsonResponse('Siswa Sudah Melakukan Absen Hari Ini.', 202);
+            }
+
+            $absen = new AbsenSiswa();
+            $absen->absen_id = $absenId;
+            $absen->siswa_id = $siswa;
+            $absen->nilai = $nilai;
+            $absen->keterangan = $keterangan;
+            $absen->save();
+
+            return $this->jsonResponse('success', 200);
+        }catch (\Exception $e) {
+            return $this->jsonResponse($e->getMessage(), 500);
+        }
+    }
+
+    public function listAbsenSiswa()
+    {
+        try {
+            $id = $this->field('id');
+            $data = AbsenSiswa::with(['absen', 'siswa'])
+                ->where('absen_id', $id)
+                ->get();
+            return $this->basicDataTables($data);
+        }catch (\Exception $e) {
+            return $this->jsonResponse($e->getMessage(), 500);
+        }
     }
 }

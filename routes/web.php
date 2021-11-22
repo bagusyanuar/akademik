@@ -112,8 +112,10 @@ Route::group(['prefix' => 'penilaian'], function (){
 Route::group(['prefix' => 'absen'], function (){
     Route::get('/', [\App\Http\Controllers\Admin\AbsensiController::class, 'index']);
     Route::get('/list', [\App\Http\Controllers\Admin\AbsensiController::class, 'getList']);
+    Route::get('/list-absen', [\App\Http\Controllers\Admin\AbsensiController::class, 'listAbsenSiswa']);
     Route::post('/create', [\App\Http\Controllers\Admin\AbsensiController::class, 'createAbsen']);
     Route::get('/detail/{id}', [\App\Http\Controllers\Admin\AbsensiController::class, 'absenDetail']);
+    Route::post('/create-absen', [\App\Http\Controllers\Admin\AbsensiController::class, 'createAbsenSiswa']);
 //    Route::get('/check', [\App\Http\Controllers\Admin\PenilaianController::class, 'justCheck']);
 //    Route::get('/getNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'getNilai']);
 //    Route::post('/saveNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'saveNilai']);

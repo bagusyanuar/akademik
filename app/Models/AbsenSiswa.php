@@ -9,4 +9,14 @@ class AbsenSiswa extends Model
 {
     use HasFactory;
     protected $table = 'absen_siswa';
+
+    public function absen()
+    {
+        return $this->belongsTo(Absen::class, 'absen_id');
+    }
+
+    public function siswa()
+    {
+        return $this->belongsTo(Siswa::class, 'siswa_id');
+    }
 }
