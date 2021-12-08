@@ -21,7 +21,7 @@ class AbsensiController extends CustomController
     public function index()
     {
         $periode = Periode::orderBy('nama', 'DESC')->get();
-        $authGuru = Guru::with(['user', 'kelas'])->where('user_id', 8)->whereNotNull('kelas_id')->first();
+        $authGuru = Guru::with(['user', 'kelas'])->where('user_id', auth()->id())->whereNotNull('kelas_id')->first();
         if (!$authGuru) {
             return view('main.dashboard');
         }
@@ -85,7 +85,7 @@ class AbsensiController extends CustomController
     public function absenDetail($id)
     {
         $absen = Absen::with(['absen', 'kelas', 'periode'])->where('id', $id)->firstOrFail();
-        $authGuru = Guru::with(['user', 'kelas'])->where('user_id', 8)->whereNotNull('kelas_id')->first();
+        $authGuru = Guru::with(['user', 'kelas'])->where('user_id', auth()->id())->whereNotNull('kelas_id')->first();
         if (!$authGuru) {
             return view('main.dashboard');
         }

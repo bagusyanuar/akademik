@@ -21,7 +21,8 @@
     <x-navbar.left-navbar :isPushMenu="true">
     </x-navbar.left-navbar>
     <x-navbar.right-navbar>
-        <x-navbar.item class="d-sm-inline-block"><a href="#" class="nav-link navbar-link-item">Logout</a></x-navbar.item>
+        <x-navbar.item class="d-sm-inline-block"><a href="/logout" class="nav-link navbar-link-item">Logout</a>
+        </x-navbar.item>
     </x-navbar.right-navbar>
 
 </x-navbar>
@@ -31,34 +32,44 @@
     </x-slot>
     <x-slot name="menu">
         <x-sidebar.menu>
-            <x-sidebar.item title="Dashboard" link="/" icon="fa fa-tachometer" />
-            <x-sidebar.header-menu title="Master"/>
-            <x-sidebar.tree-menu title="Pengguna" icon="fa fa-users">
-                <x-sidebar.item title="Admin" link="/admin" />
-                <x-sidebar.item title="Guru" link="/guru" />
-                <x-sidebar.item title="Orang Tua" link="/orang-tua" />
-                <x-sidebar.item title="Siswa" link="/siswa" />
-            </x-sidebar.tree-menu>
-            <x-sidebar.tree-menu title="Akademik" icon="fa fa-hdd-o">
-                <x-sidebar.item title="Periode" link="/periode" />
-                <x-sidebar.item title="Kelas" link="/kelas" />
-                <x-sidebar.item title="Mata Pelajaran" link="/mata-pelajaran" />
-                <x-sidebar.item title="Pelajaran Kelas" link="/pelajaran-kelas" />
-                <x-sidebar.item title="Jadwal Pelajaran" link="/jadwal" />
-            </x-sidebar.tree-menu>
-            <x-sidebar.header-menu title="Penilaian"/>
-            <x-sidebar.item title="Penilaian" link="/penilaian" />
-            <x-sidebar.item title="Absen" link="/absen" />
+            <x-sidebar.item title="Dashboard" link="/" icon="fa fa-tachometer"/>
+            @if(auth()->user()->role === 'admin')
+                <x-sidebar.header-menu title="Master"/>
+                <x-sidebar.tree-menu title="Pengguna" icon="fa fa-users">
+                    <x-sidebar.item title="Admin" link="/admin"/>
+                    <x-sidebar.item title="Guru" link="/guru"/>
+                    <x-sidebar.item title="Orang Tua" link="/orang-tua"/>
+                    <x-sidebar.item title="Siswa" link="/siswa"/>
+                </x-sidebar.tree-menu>
+                <x-sidebar.tree-menu title="Akademik" icon="fa fa-hdd-o">
+                    <x-sidebar.item title="Periode" link="/periode"/>
+                    <x-sidebar.item title="Kelas" link="/kelas"/>
+                    <x-sidebar.item title="Mata Pelajaran" link="/mata-pelajaran"/>
+                    <x-sidebar.item title="Pelajaran Kelas" link="/pelajaran-kelas"/>
+                    <x-sidebar.item title="Jadwal Pelajaran" link="/jadwal"/>
+                </x-sidebar.tree-menu>
+            @endif
+            @if(auth()->user()->role === 'guru')
+                <x-sidebar.header-menu title="Penilaian"/>
+                <x-sidebar.item title="Penilaian" link="/penilaian"/>
+                <x-sidebar.item title="Absen" link="/absen"/>
+
+                <x-sidebar.header-menu title="Lapoan"/>
+                <x-sidebar.item title="Raport Siswa" link="/raport"/>
+            @endif
         </x-sidebar.menu>
+
     </x-slot>
 </x-sidebar>
 <div class="content-wrapper p-3">
-        @yield('content-title')
-        @yield('content')
+    @yield('content-title')
+    @yield('content')
 </div>
 </body>
 <script src="{{ asset('/jQuery/jquery-3.4.1.min.js') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.js') }}"></script>
 <script src="{{ asset ('/adminlte/js/adminlte.js') }}"></script>
 <script src="{{ asset('/adminlte/plugins/select2/select2.js') }}"></script>

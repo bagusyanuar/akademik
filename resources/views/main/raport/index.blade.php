@@ -8,7 +8,7 @@
         ],
         [
             'link' => '/',
-            'title' => 'Absensi'
+            'title' => 'Raport'
         ],
     ];
 @endphp
@@ -30,18 +30,17 @@
 
 
     </style>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
 @endsection
 @section('content-title')
     <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mb-0">Halaman Absensi Kelas {{ $guru->kelas->nama }}</h4>
+        <h4 class="mb-0">Halaman Raport Kelas {{ $guru->kelas->nama }}</h4>
         <x-breadcrumb :item="$breadcrumb_item"></x-breadcrumb>
     </div>
 @endsection
 @section('content')
     <div class="row justify-content-center">
         <div class="col-12">
-            <x-card title="Form Absensi Kelas {{ $guru->kelas->nama }}" class="mt-3">
+            <x-card title="Form Penilaian Kelas {{ $guru->kelas->nama }}" class="mt-3">
                 <x-slot name="header_action">
                     <div class="d-flex">
                         <div class="d-flex align-items-center">
@@ -54,8 +53,7 @@
                         <div class="d-flex align-items-center">
                             <span class="font-weight-bold mr-2">Semester : </span>
                             <div class="dropdown">
-                                <a href="#" class="title-header-action font-weight-bold text-black-50"
-                                   data-toggle="dropdown" aria-expanded="false"
+                                <a href="#" class="title-header-action font-weight-bold text-black-50" data-toggle="dropdown" aria-expanded="false"
                                    id="label_semester" data-semester="1">Semester 1</a>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     <a class="dropdown-item btn-semester" href="#" data-semester="1">Semester 1</a>
@@ -66,17 +64,24 @@
                         </div>
                     </div>
                 </x-slot>
-                <div class="text-right w-100 mb-3">
-                    <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-absen"><i
-                            class="fa fa-plus mr-2"></i><span>Buat Absensi</span></a>
-                </div>
+
+{{--                <div class="form-group w-100">--}}
+{{--                    <label for="semester">Nama Siswa</label>--}}
+{{--                    <x-form.select2 id="siswa" name="siswa">--}}
+{{--                        @foreach($siswa as $value)--}}
+{{--                            <option value="{{ $value->id }}">{{ $value->nama }}</option>--}}
+{{--                        @endforeach--}}
+{{--                    </x-form.select2>--}}
+{{--                </div>--}}
+                <hr/>
                 <div>
-                    <table id="my-table" class="table display w-100">
-                        <thead class="w-100">
+                    <table class="table">
+                        <thead>
                         <tr>
-                            <th width="10%" class="text-center">#</th>
-                            <th width="70%">Tanggal</th>
-                            <th width="20%" class="text-center">Action</th>
+                            <th scope="col">#</th>
+                            <th scope="col">Mata Pelajaran</th>
+                            <th scope="col">Nilai</th>
+                            <th scope="col">Aksi</th>
                         </tr>
                         </thead>
                         <tbody id="panel_nilai">
@@ -87,26 +92,25 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modal-absen" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="modal-nilai" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Data Absen<span id="title-hari"
-                                                                                   class="title-hari"></span>
+                    <h5 class="modal-title" id="exampleModalLabel">Nilai Pelajaran<span id="title-hari"
+                                                                                        class="title-hari"></span>
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="kelas" value="{{ $guru->kelas->id }}">
+                    <input type="hidden" id="idPelajaran" value="">
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group w-100">
-                                <label for="tanggal">Tanggal</label>
-                                <input type="date" id="tanggal" name="tanggal" class="form-control"
-                                       value="{{ date('Y-m-d') }}">
+                                <label for="nilai">Nilai</label>
+                                <input type="number" id="nilai" name="nilai" class="form-control" value="0">
                             </div>
                         </div>
                     </div>
@@ -114,7 +118,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary btn-save-absen">Simpan</button>
+                    <button type="button" class="btn btn-primary btn-save">Simpan</button>
                 </div>
             </div>
         </div>
@@ -156,14 +160,8 @@
 @endsection
 
 @section('js')
-    <script type="text/javascript" charset="utf8"
-            src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" charset="utf8"
-            src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
     <script src="{{ asset('/helper/helper.js') }}"></script>
     <script>
-        let table;
-
         async function getNilai() {
             let el = $('#panel_nilai');
             el.empty();
@@ -204,27 +202,21 @@
                 '</tr>';
         }
 
-        function reload() {
-            event.preventDefault();
-            table.ajax.reload();
-        }
-        async function createAbsen() {
+        async function saveNilai() {
             try {
-                let tanggal = $('#tanggal').val();
-                let kelas = $('#kelas').val();
-                let periode = $('#label_periode').data('periode');
-                let semester = $('#label_semester').data('semester');
-                let response = await $.post('/absen/create', {
+                let siswa = $('#siswa').val();
+                let pelajaran = $('#idPelajaran').val();
+                let nilai = $('#nilai').val();
+                let response = await $.post('/penilaian/saveNilai', {
                     '_token': '{{ csrf_token() }}',
-                    tanggal, kelas, periode, semester
+                    siswa, pelajaran, nilai
                 });
-                console.log(response);
                 if (response['status'] === 200) {
-                    table.ajax.reload();
-                    $('#modal-absen').modal('hide');
+                    $('#modal-nilai').modal('hide');
+                    getNilai()
 
                 } else {
-                    sweetAlertMessage('Peringatan!', response['message'], 'warning')
+                    sweetAlertMessage('Peringatan!', response['msg'], 'warning')
                 }
                 console.log(response)
             } catch (e) {
@@ -233,39 +225,6 @@
         }
 
         $(document).ready(function () {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            let periode = $('#label_periode').data('periode');
-            let semester = $('#label_semester').data('semester');
-            let kelas = $('#kelas').val();
-            table = $('#my-table').DataTable({
-                "scrollX": true,
-                processing: true,
-                ajax: {
-                    type: 'GET',
-                    url: '/absen/list?periode=' + periode + '&kelas=' + kelas + '&semester=' + semester,
-                },
-                columnDefs: [
-                    {
-                        targets: 2,
-                        className: 'dt-body-center'
-                    }
-                ],
-                columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false},
-                    {data: 'tanggal'},
-                    {
-                        data: null, render: function (data, type, row, meta) {
-                            return '<a href="/absen/detail/' + data['id'] + '" class="btn btn-primary btn-sm text-center">detail</a>';
-                        }
-                    },
-                ],
-                paging: true,
-            });
-
             $('.select2').select2({
                 width: 'resolve'
             });
@@ -273,10 +232,11 @@
             $('#siswa').on('change', function () {
                 getNilai();
             });
+            getNilai();
 
-            $('.btn-save-absen').on('click', async function () {
-                confirmSweetAlert('Konfirmasi', 'Yakin Ingin Membuat Absensi?', function () {
-                    createAbsen();
+            $('.btn-save').on('click', async function () {
+                confirmSweetAlert('Konfirmasi', 'Yakin Ingin Merubah Nilai?', function () {
+                    saveNilai();
                 })
             });
 

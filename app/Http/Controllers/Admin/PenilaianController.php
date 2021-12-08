@@ -23,7 +23,7 @@ class PenilaianController extends CustomController
     public function index()
     {
         $periode = Periode::orderBy('nama', 'DESC')->get();
-        $authGuru = Guru::with(['user', 'kelas'])->where('user_id', 8)->whereNotNull('kelas_id')->first();
+        $authGuru = Guru::with(['user', 'kelas'])->where('user_id', auth()->id())->whereNotNull('kelas_id')->first();
         if (!$authGuru) {
             return view('main.dashboard');
         }
@@ -42,7 +42,7 @@ class PenilaianController extends CustomController
             $idSiswa = $this->field('siswa');
             $Idperiode = $this->field('periode');
             $semester = $this->field('semester');
-            $authGuru = Guru::with('user')->where('user_id', 8)->whereNotNull('kelas_id')->first();
+            $authGuru = Guru::with('user')->where('user_id', auth()->id())->whereNotNull('kelas_id')->first();
             if (!$authGuru) {
                 return $this->jsonResponse('Forbidden', 202);
             }

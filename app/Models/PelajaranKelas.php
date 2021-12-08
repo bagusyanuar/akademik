@@ -30,4 +30,10 @@ class PelajaranKelas extends Model
         return $this->hasOne(Nilai::class, 'pelajaran_kelas_id')->select(['pelajaran_kelas_id', 'nilai'])->orderBy('nilai', 'DESC');
     }
 
+    public function singlenilai()
+    {
+        return $this->hasOne(Nilai::class, 'pelajaran_kelas_id')->select(['pelajaran_kelas_id', 'nilai'])
+//            ->where('nilai.siswa_id', '=', 'siswa.id')
+            ->orderBy('nilai', 'DESC');
+    }
 }

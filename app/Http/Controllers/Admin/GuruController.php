@@ -41,7 +41,7 @@ class GuruController extends CustomController
             $data = [
                 'username' => $username,
                 'password' => $password,
-                'role' => 'admin',
+                'role' => 'guru',
             ];
             $user = $this->insert(User::class, $data);
             $data_guru = [

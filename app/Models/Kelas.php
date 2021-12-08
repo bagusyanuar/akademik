@@ -14,4 +14,9 @@ class Kelas extends Model
     {
         return $this->hasMany(PelajaranKelas::class, 'kelas_id');
     }
+
+    public function nilai()
+    {
+        return $this->hasOneThrough(Nilai::class, PelajaranKelas::class, 'kelas_id', 'pelajaran_kelas_id', 'id', 'id');
+    }
 }
