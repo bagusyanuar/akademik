@@ -124,7 +124,7 @@ Route::group(['prefix' => 'absen'], function (){
 Route::group(['prefix' => 'raport'], function (){
     Route::get('/', [\App\Http\Controllers\Admin\RaportController::class, 'index']);
     Route::get('/list', [\App\Http\Controllers\Admin\RaportController::class, 'getRaport']);
-//    Route::get('/getNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'getNilai']);
+    Route::get('/list/detail', [\App\Http\Controllers\Admin\RaportController::class, 'getDetailRaport']);
 //    Route::post('/saveNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'saveNilai']);
 });
 

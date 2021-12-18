@@ -30,6 +30,7 @@
 
 
     </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
 @endsection
 @section('content-title')
     <div class="d-flex justify-content-between align-items-center">
@@ -75,12 +76,12 @@
 {{--                </div>--}}
                 <hr/>
                 <div>
-                    <table class="table">
+                    <table id="my-table" class="table display w-100">
                         <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Mata Pelajaran</th>
-                            <th scope="col">Nilai</th>
+                            <th scope="col">Nama Siswa</th>
+                            <th scope="col">Rata - Rata</th>
                             <th scope="col">Aksi</th>
                         </tr>
                         </thead>
@@ -94,7 +95,7 @@
 
     <div class="modal fade" id="modal-nilai" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Nilai Pelajaran<span id="title-hari"
@@ -105,20 +106,44 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="idPelajaran" value="">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group w-100">
-                                <label for="nilai">Nilai</label>
-                                <input type="number" id="nilai" name="nilai" class="form-control" value="0">
-                            </div>
-                        </div>
+                    <div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Mata Pelajaran</th>
+                                <th scope="col">Nilai</th>
+                            </tr>
+                            </thead>
+                            <tbody id="panel_detail_nilai">
+                            </tbody>
+                        </table>
                     </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary btn-save">Simpan</button>
+                    <div class="d-flex justify-content-between">
+                        <p class="mb-0 font-weight-bold">Nilai Rata - Rata</p>
+                        <p class="mb-o font-weight-bold" id="nilai">0</p>
+                    </div>
+                    <div class="font-weight-bold">Nilai Absensi Siswa</div>
+                    <div class="d-flex justify-content-between">
+                        <p class="mb-0 font-weight-bold">Masuk</p>
+                        <p class="mb-o font-weight-bold" id="masuk">0</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <p class="mb-0 font-weight-bold">Ijin</p>
+                        <p class="mb-o font-weight-bold" id="ijin">0</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <p class="mb-0 font-weight-bold">Alpha</p>
+                        <p class="mb-o font-weight-bold" id="alpha">0</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <p class="mb-0 font-weight-bold">Tidak Absen</p>
+                        <p class="mb-o font-weight-bold" id="Kosong">0</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <p class="mb-0 font-weight-bold">Total Absen</p>
+                        <p class="mb-o font-weight-bold" id="total">0</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -157,35 +182,24 @@
             </div>
         </div>
     </div>
+
 @endsection
 
 @section('js')
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
     <script src="{{ asset('/helper/helper.js') }}"></script>
     <script>
-        async function getNilai() {
-            let el = $('#panel_nilai');
-            el.empty();
-            try {
-                let siswa = $('#siswa').val();
-                let periode = $('#label_periode').data('periode');
-                let semester = $('#label_semester').data('semester');
-                let response = await $.get('/penilaian/getNilai?siswa=' + siswa + '&periode=' + periode + '&semester=' + semester);
-                console.log(response);
-                let payload = response['payload'];
-                $.each(payload, function (k, v) {
-                    el.append(elNilai(v, k));
-                });
-                $('.btn-save-nilai').on('click', function () {
-                    let id = this.dataset.id;
-                    let nilai = this.dataset.nilai;
-                    $('#idPelajaran').val(id);
-                    $('#nilai').val(nilai);
-                    $('#modal-nilai').modal('show');
-                    console.log(id, nilai);
-                })
-            } catch (e) {
-                console.log(e)
-            }
+        let table;
+        var kelas = '{{ $guru->kelas->id }}';
+        var periode = $('#label_periode').data('periode');
+        var semester = $('#label_semester').data('semester');
+
+        function reload() {
+            console.log($('#label_periode').data('periode'));
+            table.ajax.reload()
         }
 
         function elNilai(v, k) {
@@ -198,29 +212,32 @@
                 '<td>' + (k + 1) + '</td>' +
                 '<td>' + mapel + '</td>' +
                 '<td>' + nilai + '</td>' +
-                '<td><button class="btn btn-primary btn-sm btn-save-nilai" data-id="' + v['id'] + '" data-nilai="' + nilai + '"><i class="fa fa-edit"></i></button></td>' +
                 '</tr>';
         }
-
-        async function saveNilai() {
+        async function getDetail(id) {
+            let el = $('#panel_detail_nilai');
+            el.empty();
             try {
-                let siswa = $('#siswa').val();
-                let pelajaran = $('#idPelajaran').val();
-                let nilai = $('#nilai').val();
-                let response = await $.post('/penilaian/saveNilai', {
-                    '_token': '{{ csrf_token() }}',
-                    siswa, pelajaran, nilai
-                });
-                if (response['status'] === 200) {
-                    $('#modal-nilai').modal('hide');
-                    getNilai()
+                let response = await $.get('/raport/list/detail?siswa='+id+'&periode='+periode+'&semester='+semester+'&kelas='+kelas);
+                let payload = response['payload']['pelajaran'];
+                let absen = response['payload']['absen'];
 
-                } else {
-                    sweetAlertMessage('Peringatan!', response['msg'], 'warning')
-                }
-                console.log(response)
-            } catch (e) {
-                sweetAlertMessage('Peringatan!', 'Error', 'error')
+                $.each(payload, function (k, v) {
+                    el.append(elNilai(v, k));
+                });
+                let total_nilai = payload.reduce((n, {nilai}) => n + (nilai === null ? 0 : nilai.nilai), 0);
+                $('#nilai').html(Math.round((total_nilai / payload.length), 0));
+                $('#masuk').html(absen['masuk']);
+                $('#ijin').html(absen['ijin']);
+                $('#alpha').html(absen['alpha']);
+                $('#kosong').html(absen['kosong']);
+                $('#total').html(absen['total']);
+
+                console.log(response);
+                console.log(total_nilai);
+                $('#modal-nilai').modal('show');
+            }catch(e) {
+                console.log(e);
             }
         }
 
@@ -229,33 +246,68 @@
                 width: 'resolve'
             });
 
-            $('#siswa').on('change', function () {
-                getNilai();
+            table = $('#my-table').DataTable({
+                "scrollX": true,
+                processing: true,
+                ajax: {
+                    type: 'GET',
+                    url: '/raport/list',
+                    'data': function (d) {
+                        return $.extend(
+                            {},
+                            d,
+                            {
+                                'kelas': kelas,
+                                'periode': periode,
+                                'semester': semester,
+                            }
+                        );
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: 1,
+                        className: 'dt-body-center'
+                    }
+                ],
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false},
+                    {data: 'nama'},
+                    {data: 'rata_rata'},
+                    {
+                        data: null, render: function (data, type, row, meta) {
+                            return '<a href="#" data-id="'+data['id']+'" class="btn btn-primary btn-sm text-center btn-detail">detail</a>';
+                        }
+                    },
+                ],
+                paging: true,
             });
-            getNilai();
 
-            $('.btn-save').on('click', async function () {
-                confirmSweetAlert('Konfirmasi', 'Yakin Ingin Merubah Nilai?', function () {
-                    saveNilai();
-                })
+            $(document).on('click', '.btn-detail' ,function (e) {
+                e.preventDefault();
+                let id = this.dataset.id;
+                getDetail(id);
             });
+
 
             $('.btn-change-periode').on('click', function () {
-                let periode = $('#periode').val();
+                let vperiode = $('#periode').val();
                 let periodeText = $('#periode option:selected').text();
-                $('#label_periode').data('periode', periode);
+                $('#label_periode').data('periode', vperiode);
                 $('#label_periode').html(periodeText);
-                getNilai();
+                periode = vperiode;
+                reload();
                 $('#modal-periode').modal('hide');
             });
 
             $('.btn-semester').on('click', function (e) {
                 e.preventDefault();
-                let semester = this.dataset.semester;
+                let vsemester = this.dataset.semester;
                 console.log(semester);
-                $('#label_semester').data('semester', semester);
+                $('#label_semester').data('semester', vsemester);
                 $('#label_semester').html(this.innerHTML);
-                getNilai();
+                semester = vsemester;
+                reload();
             })
         });
     </script>

@@ -9,4 +9,9 @@ class Nilai extends Model
 {
     use HasFactory;
     protected $table = 'nilai';
+
+    public function pelajaran()
+    {
+        return $this->belongsTo(PelajaranKelas::class, 'pelajaran_kelas_id');
+    }
 }
