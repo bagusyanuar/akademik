@@ -44,6 +44,7 @@
                 <x-sidebar.tree-menu title="Akademik" icon="fa fa-hdd-o">
                     <x-sidebar.item title="Periode" link="/periode"/>
                     <x-sidebar.item title="Kelas" link="/kelas"/>
+                    <x-sidebar.item title="Kelas Siswa" link="/kelas-siswa"/>
                     <x-sidebar.item title="Mata Pelajaran" link="/mata-pelajaran"/>
                     <x-sidebar.item title="Pelajaran Kelas" link="/pelajaran-kelas"/>
                     <x-sidebar.item title="Jadwal Pelajaran" link="/jadwal"/>

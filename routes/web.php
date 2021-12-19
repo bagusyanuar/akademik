@@ -77,6 +77,15 @@ Route::group(['prefix' => 'kelas'], function (){
     Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\KelasController::class, 'destroy']);
 });
 
+Route::group(['prefix' => 'kelas-siswa'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\KelasSiswaController::class, 'index']);
+//    Route::get('/tambah', [\App\Http\Controllers\Admin\KelasController::class, 'addPage']);
+//    Route::post('/store', [\App\Http\Controllers\Admin\KelasController::class, 'store']);
+//    Route::get('/edit/{id}', [\App\Http\Controllers\Admin\KelasController::class, 'editPage']);
+//    Route::post('/patch', [\App\Http\Controllers\Admin\KelasController::class, 'patch']);
+//    Route::post('/destroy/{id}', [\App\Http\Controllers\Admin\KelasController::class, 'destroy']);
+});
+
 Route::group(['prefix' => 'mata-pelajaran'], function (){
     Route::get('/', [\App\Http\Controllers\Admin\MataPelajaranController::class, 'index']);
     Route::get('/tambah', [\App\Http\Controllers\Admin\MataPelajaranController::class, 'addPage']);
