@@ -8,7 +8,7 @@
         ],
         [
             'link' => '/',
-            'title' => 'Jadwal Pelajaran'
+            'title' => 'Data Kelas Siswa'
         ],
     ];
 @endphp
@@ -24,6 +24,7 @@
         }
 
     </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
 @endsection
 @section('content-title')
     <div class="d-flex justify-content-between align-items-center">
@@ -35,9 +36,9 @@
     <div class="row justify-content-center">
         <div class="col-12">
             <x-card title="Data Kelas Siswa" class="mt-3">
-                {{--                <x-slot name="header_action">--}}
-                {{--                    <a href="/mata-pelajaran/tambah" class="btn btn-primary"><i class="fa fa-plus mr-1"></i>Tambah</a>--}}
-                {{--                </x-slot>--}}
+                <x-slot name="header_action">
+                    <a href="#" class="btn btn-primary" id="modalTambah"><i class="fa fa-plus mr-1"></i>Tambah</a>
+                </x-slot>
 
                 <div class="row">
                     <div class="col-6">
@@ -62,16 +63,30 @@
                     </div>
                 </div>
                 <hr/>
+                <div>
+                    <table id="my-table" class="table display w-100">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nama Siswa</th>
+                            <th scope="col">Alamat</th>
+                            <th scope="col">Aksi</th>
+                        </tr>
+                        </thead>
+                        <tbody id="panel_nilai">
+                        </tbody>
+                    </table>
+                </div>
             </x-card>
         </div>
     </div>
 
-    <div class="modal fade" id="modal-schedule" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="modal-tambah" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Jadwal Hari <span id="title-hari"
+                    <h5 class="modal-title" id="exampleModalLabel">Tambah Daftar Siswa <span id="title-hari"
                                                                                             class="title-hari"></span>
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -79,31 +94,28 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="hari" value="">
-                    <div class="form-group w-100" id="panel-mapel">
-                        <label for="mata_pelajaran">Mata Pelajaran</label>
-                        <x-form.select2 id="mata_pelajaran" name="mata_pelajaran">
-                        </x-form.select2>
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="form-group w-100">
-                                <label for="mulai">Jam Mulai</label>
-                                <input type="time" id="mulai" name="mulai" class="form-control" value="07:00">
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-group w-100">
-                                <label for="selesai">Jam Selesai</label>
-                                <input type="time" id="selesai" name="selesai" class="form-control" value="07:00">
-                            </div>
-                        </div>
-                    </div>
+                    <table id="my-table-2" class="table display w-100">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">NIS</th>
+                            <th scope="col">Nama Siswa</th>
+                            <th scope="col">Aksi</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($siswa as $v)
+                            <tr>
+                                <td>{{ $loop->index + 1 }}</td>
+                                <td>{{ $v->nis }}</td>
+                                <td>{{ $v->nama }}</td>
+                                <td><a href="#" class="btn btn-primary btn-sm btn-pilih"
+                                       data-id="{{ $v->id }}">Pilih</a></td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary btn-save-subject">Tambah</button>
                 </div>
             </div>
         </div>
@@ -111,13 +123,101 @@
 @endsection
 
 @section('js')
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
     <script src="{{ asset('/helper/helper.js') }}"></script>
     <script>
+        let table;
+        var kelas = $('#kelas').val();
+        var periode = $('#periode').val();
+
+        function reload() {
+            table.ajax.reload()
+        }
+
+        async function registerSiswa(siswa) {
+            try {
+                let response = await $.post('/kelas-siswa/register', {
+                    _token: '{{ csrf_token() }}',
+                    kelas: $('#kelas').val(),
+                    periode: $('#periode').val(),
+                    siswa: siswa
+                });
+                console.log(response);
+                if (response['status'] === 200) {
+                    reload();
+                    $('#modal-tambah').modal('hide');
+                } else {
+                    alert(response['message']);
+                }
+            } catch (e) {
+                alert('Terjadi Kesalahan')
+            }
+        }
+
         $(document).ready(function () {
             $('.select2').select2({
                 width: 'resolve'
             });
 
+            $('#modalTambah').on('click', function (e) {
+                e.preventDefault();
+                $('#modal-tambah').modal('show');
+            });
+
+            $('.btn-pilih').on('click', function (e) {
+                e.preventDefault();
+                registerSiswa(this.dataset.id)
+            });
+
+            $('#my-table-2').DataTable();
+
+            table = $('#my-table').DataTable({
+                "scrollX": true,
+                processing: true,
+                ajax: {
+                    type: 'GET',
+                    url: '/kelas-siswa/list',
+                    'data': function (d) {
+                        return $.extend(
+                            {},
+                            d,
+                            {
+                                'kelas': $('#kelas').val(),
+                                'periode': $('#periode').val(),
+                            }
+                        );
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: 3,
+                        className: 'dt-body-center'
+                    }
+                ],
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false},
+                    {data: 'siswa.nama'},
+                    {data: 'siswa.alamat'},
+                    {
+                        data: null, render: function (data, type, row, meta) {
+                            return '<a href="#" data-id="' + data['id'] + '" class="btn btn-primary btn-sm text-center btn-detail">detail</a>';
+                        }
+                    },
+                ],
+                paging: true,
+            });
+
+            $('#kelas').on('change', function () {
+                console.log(kelas)
+                reload();
+            });
+            $('#periode').on('change', function () {
+                console.log($('#periode').val())
+                reload();
+            });
         });
     </script>
 @endsection

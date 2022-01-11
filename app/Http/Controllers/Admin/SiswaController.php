@@ -40,12 +40,13 @@ class SiswaController extends CustomController
             $alamat = $this->postField('alamat');
             $orang_tua = $this->postField('orang_tua');
             $kelas = $this->postField('kelas');
+            $nis = $this->postField('nis');
             $data = [
+                'nis' => $nis,
                 'nama' => $name,
                 'tgl_lahir' => $tgl_lahir,
                 'alamat' => $alamat,
                 'orang_tua_id' => $orang_tua !== '' ? $orang_tua : null,
-                'kelas_id' => $kelas !== '' ? $kelas : null,
             ];
             $this->insert(Siswa::class, $data);
             return redirect()->back()->with(['success' => 'Berhasil Menambahkan Data Siswa...']);
@@ -57,10 +58,11 @@ class SiswaController extends CustomController
 
     public function editPage($id)
     {
-        $data = Siswa::with(['orangTua', 'kelas'])->where('id', $id)->firstOrFail();
+        $data = Siswa::with(['orangTua.orangTua'])->where('id', $id)->firstOrFail();
+//        return $data->toArray();
         $data_kelas = Kelas::all();
         $data_orang_tua = OrangTua::all();
-        return view('main.pengguna.siswa.edit')->with(['data' => $data, 'data_kelas' => $data_kelas, 'data_orang_tua' => $data_orang_tua]);
+        return view('main.pengguna.siswa.edit')->with(['data' => $data, 'data_orang_tua' => $data_orang_tua]);
     }
 
     public function patch()
@@ -72,13 +74,11 @@ class SiswaController extends CustomController
             $tgl_lahir = $this->postField('tgl_lahir');
             $alamat = $this->postField('alamat');
             $orang_tua = $this->postField('orang_tua') !== '' ? $this->postField('orang_tua') : null;
-            $kelas = $this->postField('kelas') !== '' ? $this->postField('kelas') : null;
 
             $siswa->nama = $name;
             $siswa->tgl_lahir = $tgl_lahir;
             $siswa->alamat = $alamat;
             $siswa->orang_tua_id = $orang_tua;
-            $siswa->kelas_id = $kelas;
             $siswa->save();
             return redirect('/siswa');
         } catch (\Exception $e) {

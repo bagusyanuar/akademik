@@ -12,7 +12,7 @@ class Siswa extends Model
 
     public function orangTua()
     {
-        return $this->belongsTo(OrangTua::class, 'orang_tua_id');
+        return $this->belongsTo(User::class, 'orang_tua_id');
     }
 
     public function kelas()

@@ -32,8 +32,9 @@
                     <thead>
                     <tr>
                         <th width="8%" class="text-center">#</th>
+                        <th width="10%">NIS</th>
                         <th width="20%">Nama Lengkap</th>
-                        <th width="10%">Kelas</th>
+{{--                        <th width="10%">Kelas</th>--}}
                         <th width="15%">Orang Tua</th>
                         <th width="15%">Tanggal Lahir</th>
                         <th width="20%">Alamat</th>
@@ -44,8 +45,9 @@
                     @foreach($data as $siswa)
                         <tr>
                             <td class="text-center">{{ $loop->index +1 }}</td>
+                            <td>{{ $siswa->nis }}</td>
                             <td>{{ $siswa->nama }}</td>
-                            <td>{{ $siswa->kelas === null ? '-' : $siswa->kelas->nama }}</td>
+{{--                            <td>{{ $siswa->kelas === null ? '-' : $siswa->kelas->nama }}</td>--}}
                             <td>{{ $siswa->orangTua === null ? '-' : $siswa->orangTua->nama }}</td>
                             <td>{{ $siswa->tgl_lahir }}</td>
                             <td>{{ $siswa->alamat }}</td>

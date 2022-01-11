@@ -45,15 +45,16 @@
             <form action="/siswa/store" method="POST">
                 <x-card title="Form Data Orang Tua Siswa" class="mt-3" :footer="true">
                     @csrf
+                    <x-form.input id="nis" name="nis" label="NIS"/>
                     <x-form.input id="name" name="name" label="Nama Lengkap"/>
-                    <div class="form-group w-100">
-                        <label for="kelas">Kelas</label>
-                        <x-form.select2 id="kelas" name="kelas">
-                            @foreach($data_kelas as $kelas)
-                                <option value="{{ $kelas->id }}">{{ $kelas->nama }}</option>
-                            @endforeach
-                        </x-form.select2>
-                    </div>
+{{--                    <div class="form-group w-100">--}}
+{{--                        <label for="kelas">Kelas</label>--}}
+{{--                        <x-form.select2 id="kelas" name="kelas">--}}
+{{--                            @foreach($data_kelas as $kelas)--}}
+{{--                                <option value="{{ $kelas->id }}">{{ $kelas->nama }}</option>--}}
+{{--                            @endforeach--}}
+{{--                        </x-form.select2>--}}
+{{--                    </div>--}}
                     <div class="form-group w-100">
                         <label for="orang_tua">Orang Tua</label>
                         <x-form.select2 id="orang_tua" name="orang_tua">
@@ -64,7 +65,7 @@
                         </x-form.select2>
                     </div>
                     <div class="form-group">
-                        <label for="tgl_lahir">Kelas</label>
+                        <label for="tgl_lahir">Tanggal Lahir</label>
                         <input type="date" class="form-control" id="tgl_lahir" name="tgl_lahir">
                     </div>
                     <x-form.textarea id="alamat" name="alamat" label="Alamat"></x-form.textarea>

@@ -79,6 +79,8 @@ Route::group(['prefix' => 'kelas'], function (){
 
 Route::group(['prefix' => 'kelas-siswa'], function (){
     Route::get('/', [\App\Http\Controllers\Admin\KelasSiswaController::class, 'index']);
+    Route::get('/list', [\App\Http\Controllers\Admin\KelasSiswaController::class, 'getList']);
+    Route::post('/register', [\App\Http\Controllers\Admin\KelasSiswaController::class, 'register']);
 //    Route::get('/tambah', [\App\Http\Controllers\Admin\KelasController::class, 'addPage']);
 //    Route::post('/store', [\App\Http\Controllers\Admin\KelasController::class, 'store']);
 //    Route::get('/edit/{id}', [\App\Http\Controllers\Admin\KelasController::class, 'editPage']);

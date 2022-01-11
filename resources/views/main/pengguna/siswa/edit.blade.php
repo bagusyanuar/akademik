@@ -46,26 +46,19 @@
                 <x-card title="Form Data Orang Tua Siswa" class="mt-3" :footer="true">
                     @csrf
                     <input type="hidden" id="id" name="id" value="{{ $data->id }}">
+                    <x-form.input id="nis" name="nis" label="NIS" value="{{ $data->nis }}"/>
                     <x-form.input id="name" name="name" label="Nama Lengkap" value="{{ $data->nama }}"/>
-                    <div class="form-group w-100">
-                        <label for="kelas">Kelas</label>
-                        <x-form.select2 id="kelas" name="kelas">
-                            @foreach($data_kelas as $kelas)
-                                <option value="{{ $kelas->id }}" {{ $data->kelas->id == $kelas->id ? 'selected' : '' }}>{{ $kelas->nama }}</option>
-                            @endforeach
-                        </x-form.select2>
-                    </div>
                     <div class="form-group w-100">
                         <label for="orang_tua">Orang Tua</label>
                         <x-form.select2 id="orang_tua" name="orang_tua">
                             <option value="">--Pilih Orang Tua---</option>
                             @foreach($data_orang_tua as $orang_tua)
-                                <option value="{{ $orang_tua->id }}" {{ $data->orangTua->id == $orang_tua->id ? 'selected' : '' }}>{{ $orang_tua->nama }}</option>
+                                <option value="{{ $orang_tua->id }}" {{ $data->orangTua !== null ? ($data->orangTua->orangTua->id == $orang_tua->id ? 'selected' : '') : '' }}>{{ $orang_tua->nama }}</option>
                             @endforeach
                         </x-form.select2>
                     </div>
                     <div class="form-group">
-                        <label for="tgl_lahir">Kelas</label>
+                        <label for="tgl_lahir">Tanggal Lahir</label>
                         <input type="date" class="form-control" id="tgl_lahir" name="tgl_lahir" value="{{ $data->tgl_lahir }}">
                     </div>
                     <x-form.textarea id="alamat" name="alamat" label="Alamat">{{ $data->alamat }}</x-form.textarea>
