@@ -14,4 +14,9 @@ class Nilai extends Model
     {
         return $this->belongsTo(PelajaranKelas::class, 'pelajaran_kelas_id');
     }
+
+    public function siswa()
+    {
+        return $this->belongsTo(KelasSiswa::class, 'kelas_siswa_id');
+    }
 }

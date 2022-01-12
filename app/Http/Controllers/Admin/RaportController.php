@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helper\CustomController;
 use App\Models\Absen;
 use App\Models\Guru;
+use App\Models\KelasSiswa;
 use App\Models\Nilai;
 use App\Models\PelajaranKelas;
 use App\Models\Periode;
@@ -40,18 +41,19 @@ class RaportController extends CustomController
             $periode = $this->field('periode');
             $semester = $this->field('semester');
             $kelas = $this->field('kelas');
-            $siswa = Siswa::with(['kelas.pelajaran.mataPelajaran', 'kelas.pelajaran' => function ($query) use ($periode, $semester) {
+            $siswa = KelasSiswa::with(['siswa', 'kelas.pelajaran.mataPelajaran', 'kelas.pelajaran' => function ($query) use ($periode, $semester) {
                 return $query->where('periode_id', '=', $periode)
                     ->where('semester', '=', $semester);
             }
             ])
                 ->where('kelas_id', $kelas)
+                ->where('periode_id', $periode)
                 ->get();
-
+//            return $siswa->toArray();
             $results = [];
             foreach ($siswa as $v) {
                 $tmp['id'] = $v->id;
-                $tmp['nama'] = $v->nama;
+                $tmp['nama'] = $v->siswa->nama;
                 $tmp['kelas'] = $v->kelas->nama;
                 $tmp['pelajaran'] = [];
 
@@ -59,7 +61,7 @@ class RaportController extends CustomController
                     $tmpPelajaran['nama'] = $pelajaran->mataPelajaran->nama;
                     $tmpPelajaran['nilai'] = 0;
                     $nilai = Nilai::where('pelajaran_kelas_id', '=', $pelajaran->id)
-                        ->where('siswa_id', '=', $v->id)->first();
+                        ->where('kelas_siswa_id', '=', $v->id)->first();
                     if ($nilai) {
                         $tmpPelajaran['nilai'] = $nilai->nilai;
                     }
@@ -83,7 +85,7 @@ class RaportController extends CustomController
             $kelas = $this->field('kelas');
             $siswa = $this->field('siswa');
             $pelajaran = PelajaranKelas::with(['mataPelajaran', 'nilai' => function ($query) use ($siswa) {
-                $query->where('siswa_id', $siswa);
+                $query->where('kelas_siswa_id', $siswa);
             }])
                 ->where('periode_id', $periode)
                 ->where('kelas_id', $kelas)
@@ -91,7 +93,7 @@ class RaportController extends CustomController
                 ->get();
 
             $absensi = Absen::with(['kelas', 'nilaiabsen' => function ($query) use ($siswa) {
-                return $query->where('siswa_id', $siswa);
+                return $query->where('kelas_siswa_id', $siswa);
             }])->where('periode_id', $periode)
                 ->where('kelas_id', $kelas)
                 ->where('semester', $semester)

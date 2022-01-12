@@ -17,6 +17,6 @@ class AbsenSiswa extends Model
 
     public function siswa()
     {
-        return $this->belongsTo(Siswa::class, 'siswa_id');
+        return $this->belongsTo(KelasSiswa::class, 'kelas_siswa_id');
     }
 }

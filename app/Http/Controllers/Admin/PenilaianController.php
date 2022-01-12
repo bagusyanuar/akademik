@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helper\CustomController;
 use App\Models\Guru;
 use App\Models\Kelas;
+use App\Models\KelasSiswa;
 use App\Models\MataPelajaran;
 use App\Models\Nilai;
 use App\Models\PelajaranKelas;
@@ -28,7 +29,11 @@ class PenilaianController extends CustomController
             return view('main.dashboard');
         }
 
-        $siswa = Siswa::where('kelas_id', $authGuru->kelas_id)->get();
+//        $siswa = Siswa::where('kelas_id', $authGuru->kelas_id)->get();
+        $siswa = KelasSiswa::with(['siswa'])->where('periode_id', '=', $periode[0]->id)
+            ->where('kelas_id', '=', $authGuru->kelas_id)
+            ->get();
+//        return $siswa->toArray();
         return view('main.penilaian.index')->with([
             'periode' => $periode,
             'siswa' => $siswa,
@@ -47,7 +52,7 @@ class PenilaianController extends CustomController
                 return $this->jsonResponse('Forbidden', 202);
             }
             $pelajaran = PelajaranKelas::with(['mataPelajaran', 'nilai' => function ($query) use ($idSiswa) {
-                $query->where('siswa_id', $idSiswa);
+                $query->where('kelas_siswa_id', $idSiswa);
             }])
                 ->where('periode_id', $Idperiode)
                 ->where('kelas_id', $authGuru->kelas_id)
@@ -66,11 +71,11 @@ class PenilaianController extends CustomController
             $idPelajaran = $this->postField('pelajaran');
             $nilai = $this->postField('nilai');
 
-            $vNilai = Nilai::with('siswa')->where('pelajaran_kelas_id', $idPelajaran)->where('siswa_id', $idSiswa)->first();
+            $vNilai = Nilai::with('siswa')->where('pelajaran_kelas_id', $idPelajaran)->where('kelas_siswa_id', $idSiswa)->first();
             if(!$vNilai) {
                 $newNilai = new Nilai();
                 $newNilai->pelajaran_kelas_id = $idPelajaran;
-                $newNilai->siswa_id = $idSiswa;
+                $newNilai->kelas_siswa_id = $idSiswa;
                 $newNilai->nilai = $nilai;
                 $newNilai->save();
             } else {

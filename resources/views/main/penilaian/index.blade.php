@@ -53,7 +53,8 @@
                         <div class="d-flex align-items-center">
                             <span class="font-weight-bold mr-2">Semester : </span>
                             <div class="dropdown">
-                                <a href="#" class="title-header-action font-weight-bold text-black-50" data-toggle="dropdown" aria-expanded="false"
+                                <a href="#" class="title-header-action font-weight-bold text-black-50"
+                                   data-toggle="dropdown" aria-expanded="false"
                                    id="label_semester" data-semester="1">Semester 1</a>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     <a class="dropdown-item btn-semester" href="#" data-semester="1">Semester 1</a>
@@ -69,7 +70,7 @@
                     <label for="semester">Nama Siswa</label>
                     <x-form.select2 id="siswa" name="siswa">
                         @foreach($siswa as $value)
-                            <option value="{{ $value->id }}">{{ $value->nama }}</option>
+                            <option value="{{ $value->id }}">{{ $value->siswa->nama }} ({{$value->siswa->nis}})</option>
                         @endforeach
                     </x-form.select2>
                 </div>
@@ -172,17 +173,24 @@
                 let response = await $.get('/penilaian/getNilai?siswa=' + siswa + '&periode=' + periode + '&semester=' + semester);
                 console.log(response);
                 let payload = response['payload'];
-                $.each(payload, function (k, v) {
-                    el.append(elNilai(v, k));
-                });
-                $('.btn-save-nilai').on('click', function () {
-                    let id = this.dataset.id;
-                    let nilai = this.dataset.nilai;
-                    $('#idPelajaran').val(id);
-                    $('#nilai').val(nilai);
-                    $('#modal-nilai').modal('show');
-                    console.log(id, nilai);
-                })
+                if (payload.length > 0) {
+                    $.each(payload, function (k, v) {
+                        el.append(elNilai(v, k));
+                    });
+                    $('.btn-save-nilai').on('click', function () {
+                        let id = this.dataset.id;
+                        let nilai = this.dataset.nilai;
+                        $('#idPelajaran').val(id);
+                        $('#nilai').val(nilai);
+                        $('#modal-nilai').modal('show');
+                        console.log(id, nilai);
+                    })
+                } else {
+                    el.append('<tr>' +
+                        '<td colspan="4" class="text-center">Mata Pelajaran Belum Di Tentukan</td>' +
+                        '</tr>');
+                }
+
             } catch (e) {
                 console.log(e)
             }
@@ -241,12 +249,12 @@
             });
 
             $('.btn-change-periode').on('click', function () {
-               let periode = $('#periode').val();
-               let periodeText = $('#periode option:selected').text();
-               $('#label_periode').data('periode', periode);
-               $('#label_periode').html(periodeText);
-               getNilai();
-               $('#modal-periode').modal('hide');
+                let periode = $('#periode').val();
+                let periodeText = $('#periode option:selected').text();
+                $('#label_periode').data('periode', periode);
+                $('#label_periode').html(periodeText);
+                getNilai();
+                $('#modal-periode').modal('hide');
             });
 
             $('.btn-semester').on('click', function (e) {

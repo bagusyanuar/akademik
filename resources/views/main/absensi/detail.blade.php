@@ -131,7 +131,9 @@
                                 <label for="semester">Nama Siswa</label>
                                 <x-form.select2 id="siswa" name="siswa">
                                     @foreach($siswa as $value)
-                                        <option value="{{ $value->id }}">{{ $value->nama }}</option>
+                                        <option value="{{ $value->id }}">{{ $value->siswa->nama }}
+                                            ({{$value->siswa->nis}})
+                                        </option>
                                     @endforeach
                                 </x-form.select2>
                             </div>
@@ -165,32 +167,6 @@
     <script src="{{ asset('/helper/helper.js') }}"></script>
     <script>
         let table;
-
-        async function getNilai() {
-            let el = $('#panel_nilai');
-            el.empty();
-            try {
-                let siswa = $('#siswa').val();
-                let periode = $('#label_periode').data('periode');
-                let semester = $('#label_semester').data('semester');
-                let response = await $.get('/penilaian/getNilai?siswa=' + siswa + '&periode=' + periode + '&semester=' + semester);
-                console.log(response);
-                let payload = response['payload'];
-                $.each(payload, function (k, v) {
-                    el.append(elNilai(v, k));
-                });
-                $('.btn-save-nilai').on('click', function () {
-                    let id = this.dataset.id;
-                    let nilai = this.dataset.nilai;
-                    $('#idPelajaran').val(id);
-                    $('#nilai').val(nilai);
-                    $('#modal-nilai').modal('show');
-                    console.log(id, nilai);
-                })
-            } catch (e) {
-                console.log(e)
-            }
-        }
 
         function elNilai(v, k) {
             let mapel = v['mata_pelajaran']['nama'];
@@ -233,6 +209,26 @@
             table.ajax.reload();
         }
 
+        function deleteAbsen(id) {
+            confirmSweetAlert('Konfirmasi', 'Apakah Anda Yakin Menghapus Data?', async function () {
+                try {
+                    let data = {
+                        '_token': '{{ csrf_token() }}',
+                        id: id,
+                    };
+                    let response = await $.post('/absen/destroy/', data);
+                    console.log(response)
+                    if (response['status'] === 200) {
+                        reload();
+                    } else {
+                        sweetAlertMessage('Peringatan!', response['msg'], 'warning')
+                    }
+                } catch (e) {
+                    console.log(e)
+                }
+            });
+        }
+
         $(document).ready(function () {
             $.ajaxSetup({
                 headers: {
@@ -255,25 +251,31 @@
                 ],
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false},
-                    {data: 'siswa.nama'},
+                    {data: 'siswa.siswa.nama'},
                     {data: 'nilai'},
                     {data: 'keterangan'},
                     {
                         data: null, render: function (data, type, row, meta) {
-                            return '<a href="#" class="btn btn-primary btn-sm text-center">detail</a>';
+                            return '<a href="#" class="btn btn-primary btn-sm text-center btn-delete" data-id="' + data['id'] + '"><i class="fa fa-trash"></i></a>';
                         }
                     },
                 ],
                 paging: true,
             });
 
+            table.on('draw', function () {
+                $('.btn-delete').on('click', function (e) {
+                    e.preventDefault();
+                    let id = this.dataset.id;
+                    deleteAbsen(id);
+                })
+            });
+
+
             $('.select2').select2({
                 width: 'resolve'
             });
 
-            $('#siswa').on('change', function () {
-                getNilai();
-            });
 
             $('.btn-save-absen').on('click', async function () {
                 confirmSweetAlert('Konfirmasi', 'Yakin Ingin Melakukan Absen', function () {
@@ -286,7 +288,6 @@
                 let periodeText = $('#periode option:selected').text();
                 $('#label_periode').data('periode', periode);
                 $('#label_periode').html(periodeText);
-                getNilai();
                 $('#modal-periode').modal('hide');
             });
 
@@ -296,7 +297,6 @@
                 console.log(semester);
                 $('#label_semester').data('semester', semester);
                 $('#label_semester').html(this.innerHTML);
-                getNilai();
             })
         });
     </script>

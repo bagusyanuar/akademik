@@ -127,6 +127,7 @@ Route::group(['prefix' => 'absen'], function (){
     Route::post('/create', [\App\Http\Controllers\Admin\AbsensiController::class, 'createAbsen']);
     Route::get('/detail/{id}', [\App\Http\Controllers\Admin\AbsensiController::class, 'absenDetail']);
     Route::post('/create-absen', [\App\Http\Controllers\Admin\AbsensiController::class, 'createAbsenSiswa']);
+    Route::post('/destroy', [\App\Http\Controllers\Admin\AbsensiController::class, 'destroy']);
 //    Route::get('/check', [\App\Http\Controllers\Admin\PenilaianController::class, 'justCheck']);
 //    Route::get('/getNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'getNilai']);
 //    Route::post('/saveNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'saveNilai']);

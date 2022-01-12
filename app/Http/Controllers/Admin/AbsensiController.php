@@ -8,6 +8,7 @@ use App\Helper\CustomController;
 use App\Models\Absen;
 use App\Models\AbsenSiswa;
 use App\Models\Guru;
+use App\Models\KelasSiswa;
 use App\Models\Periode;
 use App\Models\Siswa;
 
@@ -26,7 +27,10 @@ class AbsensiController extends CustomController
             return view('main.dashboard');
         }
 
-        $siswa = Siswa::where('kelas_id', $authGuru->kelas_id)->get();
+//        $siswa = Siswa::where('kelas_id', $authGuru->kelas_id)->get();
+        $siswa = KelasSiswa::with(['siswa'])->where('periode_id', '=', $periode[0]->id)
+            ->where('kelas_id', '=', $authGuru->kelas_id)
+            ->get();
         return view('main.absensi.index')->with([
             'periode' => $periode,
             'siswa' => $siswa,
@@ -90,7 +94,10 @@ class AbsensiController extends CustomController
             return view('main.dashboard');
         }
 
-        $siswa = Siswa::where('kelas_id', $authGuru->kelas_id)->get();
+//        $siswa = Siswa::where('kelas_id', $authGuru->kelas_id)->get();
+        $siswa = KelasSiswa::with(['siswa'])->where('periode_id', '=', $absen->periode_id)
+            ->where('kelas_id', '=', $authGuru->kelas_id)
+            ->get();
         return view('main.absensi.detail')->with([
             'absen' => $absen,
             'siswa' => $siswa
@@ -107,7 +114,7 @@ class AbsensiController extends CustomController
 
             $isExist = AbsenSiswa::with(['absen', 'siswa'])
                 ->where('absen_id', $absenId)
-                ->where('siswa_id', $siswa)
+                ->where('kelas_siswa_id', $siswa)
                 ->first();
             if($isExist) {
                 return $this->jsonResponse('Siswa Sudah Melakukan Absen Hari Ini.', 202);
@@ -115,7 +122,7 @@ class AbsensiController extends CustomController
 
             $absen = new AbsenSiswa();
             $absen->absen_id = $absenId;
-            $absen->siswa_id = $siswa;
+            $absen->kelas_siswa_id = $siswa;
             $absen->nilai = $nilai;
             $absen->keterangan = $keterangan;
             $absen->save();
@@ -130,10 +137,20 @@ class AbsensiController extends CustomController
     {
         try {
             $id = $this->field('id');
-            $data = AbsenSiswa::with(['absen', 'siswa'])
+            $data = AbsenSiswa::with(['absen', 'siswa.siswa'])
                 ->where('absen_id', $id)
                 ->get();
             return $this->basicDataTables($data);
+        }catch (\Exception $e) {
+            return $this->jsonResponse($e->getMessage(), 500);
+        }
+    }
+
+    public function destroy()
+    {
+        try {
+            AbsenSiswa::destroy($this->postField('id'));
+            return $this->jsonResponse('success', 200);
         }catch (\Exception $e) {
             return $this->jsonResponse($e->getMessage(), 500);
         }

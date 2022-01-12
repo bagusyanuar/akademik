@@ -81,8 +81,8 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Nama Siswa</th>
-                            <th scope="col">Rata - Rata</th>
-                            <th scope="col">Aksi</th>
+                            <th scope="col" class="text-center">Rata - Rata</th>
+                            <th scope="col" class="text-center">Aksi</th>
                         </tr>
                         </thead>
                         <tbody id="panel_nilai">
@@ -112,21 +112,23 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Mata Pelajaran</th>
-                                <th scope="col">Nilai</th>
+                                <th scope="col" class="text-right">Nilai</th>
                             </tr>
                             </thead>
                             <tbody id="panel_detail_nilai">
                             </tbody>
                         </table>
                     </div>
+                    <hr/>
                     <div class="d-flex justify-content-between">
                         <p class="mb-0 font-weight-bold">Nilai Rata - Rata</p>
-                        <p class="mb-o font-weight-bold" id="nilai">0</p>
+                        <p class="mb-0 font-weight-bold" id="nilai">0</p>
                     </div>
-                    <div class="font-weight-bold">Nilai Absensi Siswa</div>
+                    <hr/>
+                    <div class="font-weight-bold ">Nilai Absensi Siswa</div>
                     <div class="d-flex justify-content-between">
                         <p class="mb-0 font-weight-bold">Masuk</p>
-                        <p class="mb-o font-weight-bold" id="masuk">0</p>
+                        <p class="mb-0 font-weight-bold" id="masuk">0</p>
                     </div>
                     <div class="d-flex justify-content-between">
                         <p class="mb-0 font-weight-bold">Ijin</p>
@@ -211,7 +213,7 @@
             return '<tr>' +
                 '<td>' + (k + 1) + '</td>' +
                 '<td>' + mapel + '</td>' +
-                '<td>' + nilai + '</td>' +
+                '<td class="text-right">' + nilai + '</td>' +
                 '</tr>';
         }
         async function getDetail(id) {
@@ -266,7 +268,11 @@
                 },
                 columnDefs: [
                     {
-                        targets: 1,
+                        targets: 2,
+                        className: 'dt-body-center'
+                    },
+                    {
+                        targets: 3,
                         className: 'dt-body-center'
                     }
                 ],
