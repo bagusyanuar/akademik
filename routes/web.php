@@ -140,4 +140,11 @@ Route::group(['prefix' => 'raport'], function (){
 //    Route::post('/saveNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'saveNilai']);
 });
 
+Route::group(['prefix' => 'raport-anak'], function (){
+    Route::get('/', [\App\Http\Controllers\Admin\RaportController::class, 'raportAnak']);
+    Route::get('/list', [\App\Http\Controllers\Admin\RaportController::class, 'getRaportAnak']);
+//    Route::get('/list/detail', [\App\Http\Controllers\Admin\RaportController::class, 'getDetailRaport']);
+//    Route::post('/saveNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'saveNilai']);
+});
+
 

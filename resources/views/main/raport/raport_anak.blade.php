@@ -8,7 +8,7 @@
         ],
         [
             'link' => '/',
-            'title' => 'Raport'
+            'title' => 'Raport Anak'
         ],
     ];
 @endphp
@@ -34,14 +34,14 @@
 @endsection
 @section('content-title')
     <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mb-0">Halaman Raport Kelas {{ $guru->kelas->nama }}</h4>
+        <h4 class="mb-0">Halaman Raport Anak Didik Bp/Ibu {{ $user->nama }}</h4>
         <x-breadcrumb :item="$breadcrumb_item"></x-breadcrumb>
     </div>
 @endsection
 @section('content')
     <div class="row justify-content-center">
         <div class="col-12">
-            <x-card title="Form Penilaian Kelas {{ $guru->kelas->nama }}" class="mt-3">
+            <x-card title="Daftar Anak Didik" class="mt-3">
                 <x-slot name="header_action">
                     <div class="d-flex">
                         <div class="d-flex align-items-center">
@@ -82,6 +82,7 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Nama Siswa</th>
+                            <th scope="col">Kelas</th>
                             <th scope="col" class="text-center">Rata - Rata</th>
                             <th scope="col" class="text-center">Aksi</th>
                         </tr>
@@ -197,7 +198,7 @@
     <script src="{{ asset('/helper/helper.js') }}"></script>
     <script>
         let table;
-        var kelas = '{{ $guru->kelas->id }}';
+        var ortu = '{{ $user->user->id }}';
         var periode = $('#label_periode').data('periode');
         var semester = $('#label_semester').data('semester');
 
@@ -219,7 +220,7 @@
                 '</tr>';
         }
 
-        async function getDetail(id) {
+        async function getDetail(id, kelas) {
             let el = $('#panel_detail_nilai');
             el.empty();
             try {
@@ -261,13 +262,13 @@
                 processing: true,
                 ajax: {
                     type: 'GET',
-                    url: '/raport/list',
+                    url: '/raport-anak/list',
                     'data': function (d) {
                         return $.extend(
                             {},
                             d,
                             {
-                                'kelas': kelas,
+                                'ortu': ortu,
                                 'periode': periode,
                                 'semester': semester,
                             }
@@ -282,15 +283,20 @@
                     {
                         targets: 3,
                         className: 'dt-body-center'
+                    },
+                    {
+                        targets: 4,
+                        className: 'dt-body-center'
                     }
                 ],
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false},
                     {data: 'nama'},
+                    {data: 'kelas'},
                     {data: 'rata_rata'},
                     {
                         data: null, render: function (data, type, row, meta) {
-                            return '<a href="#" data-id="' + data['id'] + '" class="btn btn-primary btn-sm text-center btn-detail">detail</a>';
+                            return '<a href="#" data-id="' + data['id'] + '" data-kelas="' + data['kelas_id'] + '" class="btn btn-primary btn-sm text-center btn-detail">detail</a>';
                         }
                     },
                 ],
@@ -300,7 +306,8 @@
             $(document).on('click', '.btn-detail', function (e) {
                 e.preventDefault();
                 let id = this.dataset.id;
-                getDetail(id);
+                let kelas = this.dataset.kelas;
+                getDetail(id, kelas);
             });
 
 

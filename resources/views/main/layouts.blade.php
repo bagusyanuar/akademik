@@ -58,6 +58,10 @@
                 <x-sidebar.header-menu title="Lapoan"/>
                 <x-sidebar.item title="Raport Siswa" link="/raport"/>
             @endif
+            @if(auth()->user()->role === 'orangtua')
+                <x-sidebar.header-menu title="Lapoan"/>
+                <x-sidebar.item title="Raport Anak" link="/raport-anak"/>
+            @endif
         </x-sidebar.menu>
 
     </x-slot>
