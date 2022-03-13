@@ -32,7 +32,7 @@
     </x-slot>
     <x-slot name="menu">
         <x-sidebar.menu>
-            <x-sidebar.item title="Dashboard" link="/" icon="fa fa-tachometer"/>
+            <x-sidebar.item title="Dashboard" link="/dashboard" icon="fa fa-tachometer"/>
             @if(auth()->user()->role === 'admin')
                 <x-sidebar.header-menu title="Master"/>
                 <x-sidebar.tree-menu title="Pengguna" icon="fa fa-users">
@@ -49,6 +49,10 @@
                     <x-sidebar.item title="Pelajaran Kelas" link="/pelajaran-kelas"/>
                     <x-sidebar.item title="Jadwal Pelajaran" link="/jadwal"/>
                 </x-sidebar.tree-menu>
+
+                <x-sidebar.header-menu title="Lapoan"/>
+                <x-sidebar.item title="Raport Nilai" link="/admin/raport-nilai"/>
+                <x-sidebar.item title="Raport Absensi" link="/admin/absensi-nilai"/>
             @endif
             @if(auth()->user()->role === 'guru')
                 <x-sidebar.header-menu title="Penilaian"/>
@@ -60,7 +64,8 @@
             @endif
             @if(auth()->user()->role === 'orangtua')
                 <x-sidebar.header-menu title="Lapoan"/>
-                <x-sidebar.item title="Raport Anak" link="/raport-anak"/>
+                <x-sidebar.item title="Raport Nilai" link="/raport-anak"/>
+                <x-sidebar.item title="Absensi Absensi" link="/absensi-anak"/>
             @endif
         </x-sidebar.menu>
 

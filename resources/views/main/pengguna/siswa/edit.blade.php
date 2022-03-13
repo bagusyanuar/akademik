@@ -53,7 +53,7 @@
                         <x-form.select2 id="orang_tua" name="orang_tua">
                             <option value="">--Pilih Orang Tua---</option>
                             @foreach($data_orang_tua as $orang_tua)
-                                <option value="{{ $orang_tua->id }}" {{ $data->orangTua !== null ? ($data->orangTua->orangTua->id == $orang_tua->id ? 'selected' : '') : '' }}>{{ $orang_tua->nama }}</option>
+                                <option value="{{ $orang_tua->user->id }}" {{ $data->orangTua !== null ? ($data->orangTua->orangTua->id == $orang_tua->id ? 'selected' : '') : '' }}>{{ $orang_tua->nama }}</option>
                             @endforeach
                         </x-form.select2>
                     </div>

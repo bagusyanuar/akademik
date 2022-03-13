@@ -6,6 +6,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Helper\CustomController;
 use App\Models\Admin;
+use App\Models\Kelas;
+use App\Models\KelasSiswa;
+use App\Models\Nilai;
+use App\Models\Periode;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -86,4 +90,65 @@ class AdminController extends CustomController
             return redirect()->back()->with(['failed' => 'Terjadi Kesalahan...' . $e]);
         }
     }
+
+    public function raportNilai() {
+
+        $kelas = Kelas::all();
+        $periode = Periode::orderBy('nama', 'DESC')->get();
+        return view('main.raport.admin.raport_nilai')->with([
+            'kelas' => $kelas,
+            'periode' => $periode,
+        ]);
+    }
+
+    public function dataRaportNilai() {
+        try {
+            $periode = $this->field('periode');
+            $semester = $this->field('semester');
+            $kelas = $this->field('kelas');
+
+            $siswa = KelasSiswa::with(['siswa', 'kelas.pelajaran.mataPelajaran', 'kelas.pelajaran' => function ($query) use ($periode, $semester) {
+                return $query->where('periode_id', '=', $periode)
+                    ->where('semester', '=', $semester);
+            }
+            ])
+                ->where('kelas_id', $kelas)
+                ->where('periode_id', $periode)
+                ->get();
+            $results = [];
+            foreach ($siswa as $v) {
+                $tmp['id'] = $v->id;
+                $tmp['nama'] = $v->siswa->nama;
+                $tmp['kelas'] = $v->kelas->nama;
+                $tmp['pelajaran'] = [];
+
+                foreach ($v->kelas->pelajaran as $key => $pelajaran) {
+                    $tmpPelajaran['nama'] = $pelajaran->mataPelajaran->nama;
+                    $tmpPelajaran['nilai'] = 0;
+                    $nilai = Nilai::where('pelajaran_kelas_id', '=', $pelajaran->id)
+                        ->where('kelas_siswa_id', '=', $v->id)->first();
+                    if ($nilai) {
+                        $tmpPelajaran['nilai'] = $nilai->nilai;
+                    }
+                    array_push($tmp['pelajaran'], $tmpPelajaran);
+                }
+
+                $tmp['rata_rata'] = count($tmp['pelajaran']) > 0 ? array_sum($tmpAve = array_column($tmp['pelajaran'], 'nilai')) / count($tmp['pelajaran']) : 0;
+                array_push($results, $tmp);
+            }
+            return $this->basicDataTables($results);
+        }catch (\Exception $e) {
+            return $this->basicDataTables([]);
+        }
+    }
+
+    public function raportAbsen() {
+        $kelas = Kelas::all();
+        $periode = Periode::orderBy('nama', 'DESC')->get();
+        return view('main.raport.admin.raport_absen')->with([
+            'kelas' => $kelas,
+            'periode' => $periode,
+        ]);
+    }
+
 }

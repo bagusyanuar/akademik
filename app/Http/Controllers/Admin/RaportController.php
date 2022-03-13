@@ -141,6 +141,19 @@ class RaportController extends CustomController
         ]);
     }
 
+    public function absensiAnak()
+    {
+        $periode = Periode::orderBy('nama', 'DESC')->get();
+        $authOrtu = OrangTua::with(['user'])->where('user_id', auth()->id())->first();
+        if (!$authOrtu) {
+            return view('main.index');
+        }
+        return view('main.raport.absensi_anak')->with([
+            'periode' => $periode,
+            'user' => $authOrtu
+        ]);
+    }
+
     public function getRaportAnak()
     {
         try {
@@ -186,6 +199,49 @@ class RaportController extends CustomController
             return $this->basicDataTables($results);
         } catch (\Exception $e) {
             return $this->basicDataTables([]);
+        }
+    }
+
+    public function getDetailAbsen()
+    {
+        try {
+            $semester = $this->field('semester');
+            $periode = $this->field('periode');
+            $kelas = $this->field('kelas');
+            $siswa = $this->field('siswa');
+
+            $absensi = Absen::with(['kelas', 'nilaiabsen' => function ($query) use ($siswa) {
+                return $query->where('kelas_siswa_id', $siswa);
+            }])->where('periode_id', $periode)
+                ->where('kelas_id', $kelas)
+                ->where('semester', $semester)
+                ->get();
+
+            $jumlahAbsensi = count($absensi);
+            $masuk = $absensi->filter(function ($v, $k) {
+                return $v->nilaiabsen !== null && $v->nilaiabsen->nilai === "masuk";
+            });
+            $ijin = $absensi->filter(function ($v, $k) {
+                return $v->nilaiabsen !== null && $v->nilaiabsen->nilai === "ijin";
+            });
+            $alpha = $absensi->filter(function ($v, $k) {
+                return $v->nilaiabsen !== null && $v->nilaiabsen->nilai === "alpha";
+            });
+            $jumlahMasuk = count($masuk->all());
+            $jumlahIjin = count($ijin->all());
+            $jumlahAlpha = count($alpha->all());
+            return $this->jsonResponse('success', 200, [
+                'absensi' => $absensi,
+                'absen' => [
+                    'total' => $jumlahAbsensi,
+                    'masuk' => $jumlahMasuk,
+                    'ijin' => $jumlahIjin,
+                    'alpha' => $jumlahAlpha,
+                    'kosong' => $jumlahAbsensi - ($jumlahMasuk + $jumlahIjin + $jumlahAlpha)
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return $this->jsonResponse('Gagal ' . $e->getMessage(), 500);
         }
     }
 
