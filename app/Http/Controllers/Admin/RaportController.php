@@ -294,4 +294,55 @@ class RaportController extends CustomController
             return $this->jsonResponse('Gagal ' . $e->getMessage(), 500);
         }
     }
+
+    public function cetakRaportAnak()
+    {
+        $semester = $this->field('semester');
+        $periode = $this->field('periode');
+        $kelas = $this->field('kelas');
+        $siswa = $this->field('siswa');
+
+        $vSiswa = KelasSiswa::with(['siswa', 'kelas'])->where('id', $siswa)->first();
+        $vPeriode = Periode::where('id', $periode)->first();
+
+        $pelajaran = PelajaranKelas::with(['mataPelajaran', 'nilai' => function ($query) use ($siswa) {
+            $query->where('kelas_siswa_id', $siswa);
+        }])
+            ->where('periode_id', $periode)
+            ->where('kelas_id', $kelas)
+            ->where('semester', $semester)
+            ->get();
+
+//        return $pelajaran->toArray();
+        $absensi = Absen::with(['kelas', 'nilaiabsen' => function ($query) use ($siswa) {
+            return $query->where('kelas_siswa_id', $siswa);
+        }])->where('periode_id', $periode)
+            ->where('kelas_id', $kelas)
+            ->where('semester', $semester)
+            ->get();
+
+        $jumlahAbsensi = count($absensi);
+        $masuk = $absensi->filter(function ($v, $k) {
+            return $v->nilaiabsen !== null && $v->nilaiabsen->nilai === "masuk";
+        });
+        $ijin = $absensi->filter(function ($v, $k) {
+            return $v->nilaiabsen !== null && $v->nilaiabsen->nilai === "ijin";
+        });
+        $alpha = $absensi->filter(function ($v, $k) {
+            return $v->nilaiabsen !== null && $v->nilaiabsen->nilai === "alpha";
+        });
+        $jumlahMasuk = count($masuk->all());
+        $jumlahIjin = count($ijin->all());
+        $jumlahAlpha = count($alpha->all());
+        return $this->convertToPdf('cetak.nilai', [
+            'siswa' => $vSiswa->siswa,
+            'periode' => $vPeriode,
+            'semester' => $semester,
+            'kelas' => $vSiswa->kelas,
+            'pelajaran' => $pelajaran,
+            'masuk' => $jumlahMasuk,
+            'ijin' => $jumlahIjin,
+            'alpha' => $jumlahAlpha
+        ]);
+    }
 }
