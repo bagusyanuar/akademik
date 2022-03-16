@@ -154,6 +154,7 @@ Route::group(['prefix' => 'absensi-anak'], function (){
     Route::get('/', [\App\Http\Controllers\Admin\RaportController::class, 'absensiAnak']);
     Route::get('/list', [\App\Http\Controllers\Admin\RaportController::class, 'getRaportAnak']);
     Route::get('/list/detail', [\App\Http\Controllers\Admin\RaportController::class, 'getDetailAbsen']);
+    Route::get('/cetak', [\App\Http\Controllers\Admin\RaportController::class, 'cetak_absensi_siswa']);
 //    Route::get('/list/detail', [\App\Http\Controllers\Admin\RaportController::class, 'getDetailRaport']);
 //    Route::post('/saveNilai', [\App\Http\Controllers\Admin\PenilaianController::class, 'saveNilai']);
 });

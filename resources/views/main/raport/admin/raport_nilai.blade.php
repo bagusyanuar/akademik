@@ -147,6 +147,10 @@
                         <p class="mb-0 font-weight-bold" style="font-size: 18px">Total Absen</p>
                         <p class="mb-0 font-weight-bold" id="total" style="font-size: 18px">0</p>
                     </div>
+                    <hr/>
+                    <div class="text-right">
+                        <a href="#" class="btn btn-primary text-right" id="btn-cetak">Cetak</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -301,6 +305,8 @@
                 let id = this.dataset.id;
                 let kelas = this.dataset.kelas;
                 getDetail(id, kelas);
+                $('#btn-cetak').attr('data-id', id);
+                $('#btn-cetak').attr('data-kelas', kelas);
             });
 
 
@@ -327,6 +333,13 @@
             $('#kelas').on('change', function () {
                 kelas = $('#kelas').val();
                 reload();
+            })
+
+            $('#btn-cetak').on('click', function (e) {
+                e.preventDefault();
+                let id = this.dataset.id;
+                let kelas = this.dataset.kelas;
+                window.location.href = '/raport-anak/cetak?siswa=' + id + '&periode=' + periode + '&semester=' + semester + '&kelas=' + kelas;
             })
         });
     </script>

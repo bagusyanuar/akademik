@@ -27,6 +27,10 @@
     </style>
 </head>
 <body>
+<div class="text-center f-bold report-title">LAPORAN HASIL BELAJAR</div>
+<div class="text-center f-bold report-title" style="font-size: 16px">MA Al-MANSHUR POPONGAN KLATEN</div>
+<div class="text-center">Popongan, RT.03/RW.03, Tegalgondo</div>
+<br/>
 @yield('content')
 </body>
 </html>

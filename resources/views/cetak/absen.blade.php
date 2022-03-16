@@ -53,22 +53,24 @@
             </table>
         </div>
     </div>
-
     <hr>
+    <p style="font-weight: bold">ABSENSI SISWA</p>
     <table id="my-table" class="table display">
         <thead>
         <tr>
             <th width="5%" class="text-center">#</th>
-            <th width="85%">Mata Pelajaran</th>
-            <th width="10%" class="text-center">Nilai</th>
+            <th width="15%">Tanggal</th>
+            <th width="20%" class="text-center">Absen</th>
+            <th width="60%" class="text-center">Keterangan</th>
         </tr>
         </thead>
         <tbody>
-        @foreach($pelajaran as $v)
+        @foreach($absensi as $v)
             <tr>
                 <td class="text-center">{{ $loop->index + 1 }}</td>
-                <td>{{ $v->mataPelajaran->nama }}</td>
-                <td class="text-center">{{ $v->nilai->nilai }}</td>
+                <td>{{ $v->tanggal }}</td>
+                <td>{{ $v->nilaiabsen !== null ? $v->nilaiabsen->nilai : 'Belum Di Absen' }}</td>
+                <td class="text-center">{{ $v->nilaiabsen !== null ? $v->nilaiabsen->keterangan : '-' }}</td>
             </tr>
         @endforeach
         </tbody>
