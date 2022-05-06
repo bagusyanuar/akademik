@@ -38,6 +38,15 @@
                     @csrf
                     <x-form.input id="username" name="username" label="Username"/>
                     <x-form.input id="name" name="name" label="Nama Lengkap"/>
+                    <div class="form-group w-100">
+                        <label for="mapel">Mata Pelajaran</label>
+                        <x-form.select2 id="mapel" name="mapel">
+                            <option value="">--Pilih Mata Pelajaran---</option>
+                            @foreach($data as $v)
+                                <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                            @endforeach
+                        </x-form.select2>
+                    </div>
                     <x-form.input type="password" id="password" name="password" label="Password"/>
                     <x-slot name="footer_slot">
                         <div class="text-right">

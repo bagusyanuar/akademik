@@ -39,6 +39,15 @@
                     <input type="hidden" id="id" name="id" value="{{ $data->id }}">
                     <x-form.input id="username" name="username" label="Username" value="{{ $data->user->username }}"/>
                     <x-form.input id="name" name="name" label="Nama Lengkap" value="{{ $data->nama }}"/>
+                    <div class="form-group w-100">
+                        <label for="mapel">Mata Pelajaran</label>
+                        <x-form.select2 id="mapel" name="mapel">
+                            <option value="">--Pilih Mata Pelajaran---</option>
+                            @foreach($mapel as $v)
+                                <option value="{{ $v->id }}" {{ $data->mataPelajaran !== null ? ($v->id === $data->mataPelajaran->id ? 'selected' : '' ) : '' }}>{{ $v->nama }}</option>
+                            @endforeach
+                        </x-form.select2>
+                    </div>
                     <x-form.input type="password" id="password" name="password" label="Password"/>
                     <x-slot name="footer_slot">
                         <div class="text-right">

@@ -19,4 +19,9 @@ class Guru extends Model
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
     }
+
+    public function mataPelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id');
+    }
 }

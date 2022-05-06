@@ -39,8 +39,9 @@
                     <tr>
                         <th width="8%" class="text-center">#</th>
                         <th width="15%">Username</th>
-                        <th width="40%">Nama Lengkap</th>
-                        <th width="20%">Wali Kelas</th>
+                        <th width="30%">Nama Lengkap</th>
+                        <th width="15%">Mata Pelajaran</th>
+                        <th width="15%">Wali Kelas</th>
                         <th width="15%" class="text-center">Action</th>
                     </tr>
                     </thead>
@@ -50,6 +51,13 @@
                             <td class="text-center">{{ $loop->index +1 }}</td>
                             <td>{{ $guru->user->username }}</td>
                             <td>{{ $guru->nama }}</td>
+                            <td>
+                                @if($guru->mataPelajaran === null)
+                                    -
+                                @else
+                                    {{ $guru->mataPelajaran->nama }}
+                                @endif
+                            </td>
                             <td>
                                 @if($guru->kelas === null)
                                     <button type="button" class="btn btn-info btn-wali btn-sm"

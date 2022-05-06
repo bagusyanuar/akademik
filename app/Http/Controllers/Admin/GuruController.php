@@ -8,6 +8,7 @@ use App\Helper\CustomController;
 use App\Models\Admin;
 use App\Models\Guru;
 use App\Models\Kelas;
+use App\Models\MataPelajaran;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -21,14 +22,15 @@ class GuruController extends CustomController
 
     public function index()
     {
-        $data = Guru::with(['user', 'kelas'])->get();
+        $data = Guru::with(['user', 'kelas', 'mataPelajaran'])->get();
         $kelas = Kelas::orderBy('nama', 'ASC')->get();
         return view('main.pengguna.guru.index')->with(['data' => $data, 'kelas' => $kelas]);
     }
 
     public function addPage()
     {
-        return view('main.pengguna.guru.add');
+        $data = MataPelajaran::all();
+        return view('main.pengguna.guru.add')->with(['data'=> $data]);
     }
 
     public function store()
@@ -46,7 +48,8 @@ class GuruController extends CustomController
             $user = $this->insert(User::class, $data);
             $data_guru = [
                 'nama' => $name,
-                'user_id' => $user->id
+                'user_id' => $user->id,
+                'mata_pelajaran_id' => $this->postField('mapel') === '' ? null : $this->postField('mapel')
             ];
             $this->insert(Guru::class, $data_guru);
             DB::commit();
@@ -61,7 +64,8 @@ class GuruController extends CustomController
     public function editPage($id)
     {
         $data = Guru::with('user')->where('id', $id)->firstOrFail();
-        return view('main.pengguna.guru.edit')->with(['data' => $data]);
+        $mapel = MataPelajaran::all();
+        return view('main.pengguna.guru.edit')->with(['data' => $data, 'mapel' => $mapel]);
     }
 
     public function patch()
@@ -74,6 +78,7 @@ class GuruController extends CustomController
             $password = $this->postField('password');
             $guru = Guru::find($id);
             $guru->nama = $name;
+            $guru->mata_pelajaran_id = $this->postField('mapel');
             $guru->save();
 
             $user = User::find($guru->user_id);
